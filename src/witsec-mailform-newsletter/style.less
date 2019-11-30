@@ -1,0 +1,52 @@
+padding-top: (@paddingTop * 15px);
+padding-bottom: (@paddingBottom * 15px);
+
+& when (@bg-type = 'color') {
+  background-color: @bg-value;
+}
+
+& when (@bg-type = 'image') {
+  background-image: url(@bg-value);
+}
+
+.mbr-section-subtitle {
+  color: #767676;
+}
+
+.form-control {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.input-group-btn .btn {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin: 0 !important;
+}
+
+a:not([href]):not([tabindex]) {
+  color: #fff;
+}
+
+a.btn-white:not([href]):not([tabindex]) {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+
+  .mbr-form .row {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+  }
+
+  .form-group, .input-group-btn, .input-group-btn .btn {
+    max-width: 300px;
+    width: 100%;
+  }
+}
+
+.mbr-section-terms {
+  text-align: center;
+}

@@ -1,0 +1,30 @@
+padding-top: (@paddingTop * 15px);
+padding-bottom: (@paddingBottom * 15px);
+
+& when (@bg-type = 'color') {
+  background-color: @bg-value;
+}
+
+& when (@bg-type = 'image') {
+  background-image: url(@bg-value);
+}
+
+.title {
+  margin-bottom: 2rem;
+}
+
+.mbr-section-subtitle {
+  color: #767676;
+}
+
+textarea.form-control {
+  min-height: 188px;
+}
+
+label {
+  color: #232323;
+}
+
+.mbr-section-terms {
+  text-align: center;
+}

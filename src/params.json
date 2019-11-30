@@ -1,14 +1,22 @@
 {
-    "name": "Mailform v1",
+    "name": "Mailform v2",
     "alias": "witsec-mailform",
-    "version": 1,
-    "minAppVersion": "4",
+    "version": 2,
+    "minAppVersion": "4.10.17",
     "components" : [
-        {
-            "path": "/form",
-            "_group": "witsec",
-            "typeCompatible": "!isAMP"
+		{
+            "path":"/witsec-mailform",
+            "_group":"witsec",
+            "_isSecondary": true
+        },
+		{
+            "path":"/witsec-mailform-newsletter",
+            "_group":"witsec",
+            "_isSecondary": true
         }
+    ],
+    "plugins": [
+        "plugins"
     ],
     "ampCompatible": false,
 	"appScript": true,

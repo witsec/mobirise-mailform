@@ -1,0 +1,10 @@
+[
+    {
+        "name": "witsec-mailform",
+        "condition": true,
+        "priority": 5000,
+        "files": [
+            "witsec-mailform/witsec-mailform.js"
+        ]
+    }
+]

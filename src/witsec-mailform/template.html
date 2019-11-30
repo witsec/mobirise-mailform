@@ -1,0 +1,82 @@
+<section class="witsec-mailform mbr-section" data-bg-video="{{bg.type == 'video' && bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
+
+    <mbr-parameters>
+    <!-- Block parameters controls (Blue "Gear" panel) -->
+        <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
+        <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
+
+        <input type="checkbox" title="Show Title" name="showTitle" checked>
+        <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
+
+      	<input type="checkbox" title="Show Phone" name="showPhone" checked>
+      	<input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
+
+        <input type="text" title="Subject" name="txtSubject" value="A message from your website.">  
+        <input type="text" title="Success Message" name="txtSuccess" value="Thanks for filling out the form!">
+        <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
+
+        <fieldset type="background" name="bg" parallax>
+            <input type="image" title="Background Image" value="../_images/background.jpg" parallax>
+            <input type="color" title="Background Color" value="#ffffff" selected>
+            <input type="video" title="Background Video" value="http://www.youtube.com/watch?v=uNCr7NdOJgw">
+        </fieldset>
+        <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked>
+        <input type="color" title="Overlay Color" name="overlayColor" value="#c1c1c1" condition="overlay && bg.type !== 'color'">
+        <input type="range" inline title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.9" condition="overlay && bg.type !== 'color'">
+    <!-- End block parameters -->
+    </mbr-parameters>
+
+    <div class="mbr-overlay" mbr-if="overlay && bg.type!== 'color'" mbr-style="{'opacity': overlayOpacity, 'background-color': overlayColor}">
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="title col-12 col-lg-8">
+                <h2 mbr-if="showTitle" class="mbr-section-title align-center pb-3 mbr-fonts-style" mbr-theme-style="display-2">
+                    CONTACT FORM
+                </h2>
+                <h3 mbr-if="showSubtitle" class="mbr-section-subtitle align-center mbr-light pb-3 mbr-fonts-style" mbr-theme-style="display-5" data-app-selector=".mbr-section-subtitle">
+                    Easily add independent contact forms to your website.
+                </h3>
+          </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="media-container-column col-lg-8">
+                <form action="mail.php" name="Mobirise Form" method="post" class="mbr-form" onsubmit="event.preventDefault(); witsecSendMail(this)">
+                  	<input type="hidden" name="subject" value="{{txtSubject}}">
+	                <div class="row">
+                        <div hidden="hidden" class="witsec-mailform-alert alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
+                        <div hidden="hidden" class="witsec-mailform-alert alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group" data-for="name" mbr-class="{'col-md-6': !showPhone}">
+                            <label mbr-text mbr-theme-style="display-7" for="name" class="form-control-label mbr-fonts-style">Name</label>
+                            <input type="text" name="name" data-form-field="Name" mbr-theme-style="display-7" required="required" class="form-control">
+                        </div>
+                        <div class="col-md-4 form-group" mbr-class="{'col-md-6': !showPhone}" data-for="email">
+                            <label mbr-text mbr-theme-style="display-7" for="email" class="form-control-label mbr-fonts-style">Email</label>
+                            <input type="email" name="email" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
+                        </div>
+                        <div mbr-if="showPhone" class="col-md-4 form-group" data-for="phone">
+                            <label mbr-text mbr-theme-style="display-7" for="phone" class="form-control-label mbr-fonts-style">Phone</label>
+                            <input type="tel" name="phone" data-form-field="Phone" mbr-theme-style="display-7" class="form-control">
+                        </div>
+                        <div data-for="message" class="col-md-12 form-group">
+                            <label mbr-text mbr-theme-style="display-7" for="message" class="form-control-label mbr-fonts-style">Message</label>
+                            <textarea name="message" data-form-field="Message" mbr-theme-style="display-7" class="form-control"></textarea>
+                        </div>
+                        <div mbr-if="showTerms" class="col-md-12 justify-content-center form-group">
+                            <p class="mbr-section-terms mbr-text mbr-fonts-style" mbr-theme-style="display-7" mbr-html="terms" data-app-edit="content" data-app-selector=".mbr-section-terms">
+                              This form uses Google's reCAPTCHA. By continuing you agree to the <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms</a>.
+                            </p>
+                        </div>
+                        <div class="col-md-12 input-group-btn align-center" mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd">
+                          <a type="submit" class="btn btn-primary btn-form witsec-btn-submit" data-app-placeholder="Type Text">SEND FORM</a>
+                      	</div>
+                    </div>
+              </form>
+            </div>
+        </div>
+    </div>
+</section>
