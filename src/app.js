@@ -371,9 +371,9 @@
 						// Rename the elements back	and re-add DOCTYPE				
 						b = b.replace(/<([/]?)(html|head|body)x/igm, "<$1$2");
 						b = "<!DOCTYPE html>\n" + b;
-
-						return b
 					}
+
+					return b
 				});
 			}
 		}
