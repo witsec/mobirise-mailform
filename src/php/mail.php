@@ -89,10 +89,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		// Sender as From Email or predefined From Email
 		$from = ("{from-them}" == "1" ? $_POST["email"] : "{from}");
 
+		// Sender as From name or predefined From Name (remove all double quotes, if any)
+		$name = preg_replace('/(["“”‘’„”«»]|&quot;)/', "", $_POST["name"], -1);
+		$fromName = ("{from-name-them}" == "1" && $name ? $name : "{from-name}");
+
 		// Set headers
 		$headers  = "MIME-Version: 1.0\r\n";
 		$headers .= "Content-type:text/html;charset=UTF-8\r\n";
-		$headers .= "From: \"{from-name}\" <" . $from . ">\r\n";
+		$headers .= "From: \"" . $fromName . "\" <" . $from . ">\r\n";
 		$headers .= "Reply-To: " . $from;
 
 		// Send the mail

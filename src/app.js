@@ -7,27 +7,6 @@
 				var a = this;
 				var php = "";
 
-				a.addFilter("publishHTML", function(b) {
-					// If you make use of the custom mailform...
-					if (a.projectSettings["witsec-mailform"]) {
-						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
-						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function(data) {
-							// Replace the variables with the correct values
-							php = data;
-							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
-							php = php.replace(/{from}/g, a.projectSettings["witsec-mailform-from"]);
-							php = php.replace(/{from-them}/g, (a.projectSettings["witsec-mailform-from-them"] ? "1" : "0") );
-							php = php.replace(/{from-name}/g, a.projectSettings["witsec-mailform-from-name"]);
-							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
-							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "3" : "0") );
-							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
-							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
-						});
-					}
-
-					return b
-				});
-
 				// Add site settings
 				a.addFilter("sidebarProjectSettings",function(b){
 					var wm = a.projectSettings["witsec-mailform"] || false;
@@ -111,6 +90,7 @@
 					a.projectSettings["witsec-mailform-from"]                = a.projectSettings["witsec-mailform-from"]                 || mbrApp.getUserInfo()["email"];
 					a.projectSettings["witsec-mailform-from-them"]           = a.projectSettings["witsec-mailform-from-them"]            || false;
 					a.projectSettings["witsec-mailform-from-name"]           = a.projectSettings["witsec-mailform-from-name"]            || "Your Name";
+					a.projectSettings["witsec-mailform-from-name-them"]      = a.projectSettings["witsec-mailform-from-name-them"]       || false;
 					a.projectSettings["witsec-mailform-template"]            = a.projectSettings["witsec-mailform-template"]             || template;
 					a.projectSettings["witsec-mailform-recaptcha"]           = a.projectSettings["witsec-mailform-recaptcha"]            || false;
 					a.projectSettings["witsec-mailform-recaptcha-sitekey"]   = a.projectSettings["witsec-mailform-recaptcha-sitekey"]    || "";
@@ -150,6 +130,18 @@
 							'      <label for="witsec-mailform-from" class="col-sm-4 col-form-label">From Email</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-from" placeholder="' + mbrApp.getUserInfo()["email"] + '" value="' + a.projectSettings["witsec-mailform-from"] + '">',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row">',
+							'      <label for="witsec-mailform-from-name-them" class="col-sm-4 col-form-label">Sender as From Name</label>',
+							'      <div class="col-sm-7">',
+							'        <div class="togglebutton">',
+							'          <label style="width: 100%">',
+							'            <input type="checkbox" id="witsec-mailform-from-name-them" name="witsec-mailform-from-name-them" ' + (a.projectSettings["witsec-mailform-from-name-them"] ? "checked" : "") + ">",
+							'            <span class="toggle" style="margin-top: -6px;"></span>',
+							'          </label>',
+							'          (only if "name" is a POST variable, otherwise "From Name" will be used)',
+							'        </div>',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row">',
@@ -295,6 +287,7 @@
 								a.projectSettings["witsec-mailform-from"]                = $("#witsec-mailform-from").val();
 								a.projectSettings["witsec-mailform-from-them"]           = $("#witsec-mailform-from-them").prop("checked");
 								a.projectSettings["witsec-mailform-from-name"]           = $("#witsec-mailform-from-name").val();
+								a.projectSettings["witsec-mailform-from-name-them"]      = $("#witsec-mailform-from-name-them").prop("checked");
 								a.projectSettings["witsec-mailform-template"]            = $("#witsec-mailform-template").val();
 								a.projectSettings["witsec-mailform-recaptcha"]           = $("#witsec-mailform-recaptcha").prop("checked");
 								a.projectSettings["witsec-mailform-recaptcha-sitekey"]   = $("#witsec-mailform-recaptcha-sitekey").val();
@@ -330,9 +323,27 @@
 					// Only do things if the mailform has been enabled
 					if (a.projectSettings["witsec-mailform"]) {
 
+						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
+						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function(data) {
+							// Replace the variables with the correct values
+							php = data;
+							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
+							php = php.replace(/{from}/g, a.projectSettings["witsec-mailform-from"]);
+							php = php.replace(/{from-them}/g, (a.projectSettings["witsec-mailform-from-them"] ? "1" : "0") );
+							php = php.replace(/{from-name}/g, a.projectSettings["witsec-mailform-from-name"]);
+							php = php.replace(/{from-name-them}/g, (a.projectSettings["witsec-mailform-from-name-them"] ? "1" : "0") );
+							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
+							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "3" : "0") );
+							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
+							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
+						});
+
 						// Rename html/head/body elements and remove DOCTYPE, so we don't lose them when we want to get them back from jQuery (there must be a better way, right?)
 						b = b.replace(/<!DOCTYPE html>/igm, "");					
 						b = b.replace(/<([/]?)(html|head|body)/igm, "<$1$2x");
+
+						// Hide PHP using HTML comment tags, as jQuery doesn't understand these tags and distorts them beyond repair
+						b = b.replace(/(<\?[\w\W]+?\?>)/gmi, "<!--$1-->");
 
 						// jQuery that B
 						j = $(b);
@@ -364,9 +375,11 @@
 						});
 						j.find("[witsec-html]").removeAttr("witsec-html");
 
-
 						// Step out of jQuery
 						b = j.prop("outerHTML");
+
+						// Restore PHP tags to their former glory
+						b = b.replace(/<!--(<\?[\w\W]+?\?>)-->/gmi, "$1");
 
 						// Rename the elements back	and re-add DOCTYPE				
 						b = b.replace(/<([/]?)(html|head|body)x/igm, "<$1$2");

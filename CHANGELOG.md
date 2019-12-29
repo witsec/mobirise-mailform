@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3 (2019-12-29)
+
+- Added feature to use sender's name as "From Name", if "name" is a POST variable. Otherwise the predefined "From Name" will be used
+- Added fix to stop PHP code from getting crippled
+- Added GitHub Actions CI pipeline to automatically generate mbrext files
+
 ## v2 (2019-11-30)
 
 - Added reCAPTCHA v3 support
