@@ -364,9 +364,9 @@
 						// Remove the witsec-mailform class from any element
 						j.find(".witsec-mailform").removeClass("witsec-mailform");
 
-						// Change the <a> submit button to an actual <button>
+						// Change the <a> submit button to an actual <button> and copy all classes along
 						j.find('a[type="submit"].witsec-btn-submit').replaceWith(function () {
-							return $('<button type="submit" class="btn btn-primary display-4">' + this.innerHTML + '</button>');
+							return $('<button type="submit">' + this.innerHTML + '</button>').attr("class", $(this).attr("class") );
 						});
 
 						// Put the values of the witsec-html attribute inside the tag that has it

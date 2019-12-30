@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v4 (2019-12-30)
+
+- Fixed issue where submit/send button didn't keep the intended classes
+
 ## v3 (2019-12-29)
 
 - Added feature to use sender's name as "From Name", if "name" is a POST variable. Otherwise the predefined "From Name" will be used
