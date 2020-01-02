@@ -338,6 +338,11 @@
 							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
 						});
 
+						// Remove any code before DOCTYPE (don't worry, we'll put it back later)
+						var pattern = /^([\w\W]*?)<!DOCTYPE html>/mi;
+						var beforeDocType = b.match(pattern);
+						b = b.replace(pattern, "");
+
 						// Rename html/head/body elements and remove DOCTYPE, so we don't lose them when we want to get them back from jQuery (there must be a better way, right?)
 						b = b.replace(/<!DOCTYPE html>/igm, "");					
 						b = b.replace(/<([/]?)(html|head|body)/igm, "<$1$2x");
@@ -381,9 +386,11 @@
 						// Restore PHP tags to their former glory
 						b = b.replace(/<!--(<\?[\w\W]+?\?>)-->/gmi, "$1");
 
-						// Rename the elements back	and re-add DOCTYPE				
+						// Rename the elements back
 						b = b.replace(/<([/]?)(html|head|body)x/igm, "<$1$2");
-						b = "<!DOCTYPE html>\n" + b;
+
+						// re-add code (if any) before DOCTYPE, including DOCTYPE itself
+						b = (beforeDocType ? beforeDocType[1] : "") + "<!DOCTYPE html>\n" + b;
 					}
 
 					return b
