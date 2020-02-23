@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v6 (2020-02-08)
+
+- Overhauled some internal workings. The extension is now using regex rather than transform html to a DOM object and back, so we no longer have to worry about PHP being present or not. This actually made the code a whole lot better to read and we removed a bunch of classes and such that weren't needed anymore
+- Put some extra checks in place to see if the Mobirise block that's being processed contains a witsec mailform. If it doesn't, don't bother with the block
+- Added a check to see if the current project is AMP. This prevents the Mailform from being added to the Site Settings of AMP projects
+- Added a feature where you can specify the html tag (or tags) that contain the sender's name. For example, if your form field is named "nom" or it's a combination of "first_name" and "last_name", you can now specify that in the Mailform settings.
+
 ## v5 (2020-01-02)
 
 - Fixed a bug so code before !DOCTYPE is handled properly

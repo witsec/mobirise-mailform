@@ -1,4 +1,6 @@
 function witsecSendMail(obj) {
+    event.preventDefault();
+
     var frm = $(obj);
 
     if (typeof witsecRcpSitekey !== 'undefined') {
@@ -15,6 +17,9 @@ function witsecSendMail(obj) {
 }
 
 function witsecSendMailAjax(frm) {
+    frm.attr("action", "mail.php");
+    frm.attr("method", "POST");
+
     $.ajax({
         type: frm.attr("method"),
         url: frm.attr("action"),

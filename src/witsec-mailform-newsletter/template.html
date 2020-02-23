@@ -41,18 +41,18 @@
 
         <div class="row py-2 justify-content-center">
             <div class="col-12 col-lg-6  col-md-8 ">
-              	<form action="mail.php" name="Mobirise Form" method="post" class="mbr-form" onsubmit="event.preventDefault(); witsecSendMail(this)">
+              	<form action="mail.php" method="post" class="mbr-form" onsubmit="witsecSendMail(this)">
                   	<input type="hidden" name="subject" value="{{txtSubject}}">
 	                <div class="row">
-                        <div hidden="hidden" class="witsec-mailform-alert alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
-                        <div hidden="hidden" class="witsec-mailform-alert alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
+                        <div hidden="hidden" class="alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
+                        <div hidden="hidden" class="alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
                     </div>
                     <div class="dragArea row">
                         <div class="form-group col" data-for="email">
                             <input type="email" name="email" placeholder="Email" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
                         </div>
                         <div class="col-auto input-group-btn " mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd">
-                          	<a type="submit" class="btn btn-primary btn-form witsec-btn-submit" data-app-placeholder="Type Text">SUBSCRIBE</a>
+                          	<a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SUBSCRIBE</a>
                         </div>
                     </div>
                 </form>

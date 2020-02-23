@@ -1,9 +1,6 @@
 <?php
 // We only do stuff if there's a POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	// Let the browser know JSON is coming
-	header("Content-type: application/json");
-
 	try {
 		// Sanitize user input
 		$_POST = array_map("strip_tags", $_POST);
@@ -67,6 +64,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$formdata = "";
 		foreach ($_POST as $k => $v) {
 			if ( !in_array($k, $matches[1]) ) {
+				// Implode array to make it look better
+				if (is_array($v))
+					$v = implode(", ", $v);
+
+				// Replace some chars
+				$k = str_replace("_", " ", $k);
+				$v = str_replace("\n", "<br>", $v);
+
+				// Add to formdata
 				$formdata .= ($formdata ? "<br><br>" : "") . ucfirst($k) . ":<br>" . $v;
 			}
 		}
@@ -89,9 +95,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		// Sender as From Email or predefined From Email
 		$from = ("{from-them}" == "1" ? $_POST["email"] : "{from}");
 
-		// Sender as From name or predefined From Name (remove all double quotes, if any)
-		$name = preg_replace('/(["“”‘’„”«»]|&quot;)/', "", $_POST["name"], -1);
-		$fromName = ("{from-name-them}" == "1" && $name ? $name : "{from-name}");
+		// Sender as From Name or predefined From Name
+		$fromName = "";
+		if ("{from-name-them}" == "1") {
+			$fromName = "{from-name-them-field}";
+
+			// Extract variable names from the name field
+			preg_match_all("/\{([a-zA-Z0-9_-]+)\}/", $fromName, $nameMatches);
+
+			// Loop through all variables of the name field
+			foreach($nameMatches[1] as $val) {
+				// Try to replace all variables with the corresponding postvars (if they exist)
+				$fromName = str_replace("{" . $val . "}", (isset($_POST[$val]) ? $_POST[$val] : ""), $fromName);
+			}
+		}
+
+		// Double check if fromName isn't empty, otherwise fill it with the predefined name
+		$fromName = trim($fromName);
+		$fromName = ($fromName ? $fromName : "{from-name}");
+		$fromName = preg_replace('/(["“”‘’„”«»]|&quot;)/', "", $fromName, -1);
+
 
 		// Set headers
 		$headers  = "MIME-Version: 1.0\r\n";
@@ -116,8 +139,9 @@ function json($success, $msg="") {
 	if ($msg)
 		$arr["message"] = $msg;
 
+	// Send the JSON and stop the presses
+	header("Content-type: application/json");
 	echo json_encode($arr);
-
 	die();
 }
 ?>

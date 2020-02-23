@@ -43,11 +43,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="media-container-column col-lg-8">
-                <form action="mail.php" name="Mobirise Form" method="post" class="mbr-form" onsubmit="event.preventDefault(); witsecSendMail(this)">
+                <form action="mail.php" method="post" class="mbr-form" onsubmit="witsecSendMail(this)">
                   	<input type="hidden" name="subject" value="{{txtSubject}}">
 	                <div class="row">
-                        <div hidden="hidden" class="witsec-mailform-alert alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
-                        <div hidden="hidden" class="witsec-mailform-alert alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
+                        <div hidden="hidden" class="alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
+                        <div hidden="hidden" class="alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 form-group" data-for="name" mbr-class="{'col-md-6': !showPhone}">
@@ -72,7 +72,7 @@
                             </p>
                         </div>
                         <div class="col-md-12 input-group-btn align-center" mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd">
-                          <a type="submit" class="btn btn-primary btn-form witsec-btn-submit" data-app-placeholder="Type Text">SEND FORM</a>
+                          <a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SEND FORM</a>
                       	</div>
                     </div>
               </form>

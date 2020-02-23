@@ -7,6 +7,10 @@
 				var a = this;
 				var php = "";
 
+				// Stop processing if the current website is AMP
+				if (mbrApp.isAMP())
+					return;
+
 				// Add site settings
 				a.addFilter("sidebarProjectSettings",function(b){
 					var wm = a.projectSettings["witsec-mailform"] || false;
@@ -73,6 +77,16 @@
 					}
 				});
 
+				// Respond to enabling/disabling "Sender as From Name"
+				mbrApp.$body.on("change", "#witsec-mailform-from-name-them", function() {
+					if ($("#witsec-mailform-from-name-them").prop("checked")) {
+						$(".witsec-mailform-from-name-them-field-div").show();
+					}
+					else {
+						$(".witsec-mailform-from-name-them-field-div").hide();
+					}
+				});
+
 				// Respond to hiding the reCAPTCHA badge
 				mbrApp.$body.on("change", "#witsec-mailform-recaptcha-hidebadge", function() {
 					if ($("#witsec-mailform-recaptcha-hidebadge").prop("checked")) {
@@ -86,22 +100,26 @@
 					template = "Hi,\n\nYou have received a new message from your website.\n\n{formdata}\n\nDate: {date}\nRemote IP: {ip}\n\nHave a nice day.";
 
 					// Do a check if mailform values have been set, otherwise set it to something default
-					a.projectSettings["witsec-mailform-to"]                  = a.projectSettings["witsec-mailform-to"]                   || mbrApp.getUserInfo()["email"];
-					a.projectSettings["witsec-mailform-from"]                = a.projectSettings["witsec-mailform-from"]                 || mbrApp.getUserInfo()["email"];
-					a.projectSettings["witsec-mailform-from-them"]           = a.projectSettings["witsec-mailform-from-them"]            || false;
-					a.projectSettings["witsec-mailform-from-name"]           = a.projectSettings["witsec-mailform-from-name"]            || "Your Name";
-					a.projectSettings["witsec-mailform-from-name-them"]      = a.projectSettings["witsec-mailform-from-name-them"]       || false;
-					a.projectSettings["witsec-mailform-template"]            = a.projectSettings["witsec-mailform-template"]             || template;
-					a.projectSettings["witsec-mailform-recaptcha"]           = a.projectSettings["witsec-mailform-recaptcha"]            || false;
-					a.projectSettings["witsec-mailform-recaptcha-sitekey"]   = a.projectSettings["witsec-mailform-recaptcha-sitekey"]    || "";
-					a.projectSettings["witsec-mailform-recaptcha-secretkey"] = a.projectSettings["witsec-mailform-recaptcha-secretkey"]  || "";
-					a.projectSettings["witsec-mailform-recaptcha-score"]     = a.projectSettings["witsec-mailform-recaptcha-score"]      || "0.5";
+					a.projectSettings["witsec-mailform-to"]                   = a.projectSettings["witsec-mailform-to"]                   || mbrApp.getUserInfo()["email"];
+					a.projectSettings["witsec-mailform-from"]                 = a.projectSettings["witsec-mailform-from"]                 || mbrApp.getUserInfo()["email"];
+					a.projectSettings["witsec-mailform-from-them"]            = a.projectSettings["witsec-mailform-from-them"]            || false;
+					a.projectSettings["witsec-mailform-from-name"]            = a.projectSettings["witsec-mailform-from-name"]            || "Your Name";
+					a.projectSettings["witsec-mailform-from-name-them"]       = a.projectSettings["witsec-mailform-from-name-them"]       || false;
+					a.projectSettings["witsec-mailform-from-name-them-field"] = a.projectSettings["witsec-mailform-from-name-them-field"] || "{name}";
+					a.projectSettings["witsec-mailform-template"]             = a.projectSettings["witsec-mailform-template"]             || template;
+					a.projectSettings["witsec-mailform-recaptcha"]            = a.projectSettings["witsec-mailform-recaptcha"]            || false;
+					a.projectSettings["witsec-mailform-recaptcha-sitekey"]    = a.projectSettings["witsec-mailform-recaptcha-sitekey"]    || "";
+					a.projectSettings["witsec-mailform-recaptcha-secretkey"]  = a.projectSettings["witsec-mailform-recaptcha-secretkey"]  || "";
+					a.projectSettings["witsec-mailform-recaptcha-score"]      = a.projectSettings["witsec-mailform-recaptcha-score"]      || "0.5";
 
 					// Show or hide extra reCAPTCHA fields
 					var hideReCaptcha = (a.projectSettings["witsec-mailform-recaptcha"] ? "" : "style='display:none'");
 
 					// Show or hide the "From Email" field, based on whether "Sender as From Email" is checked
 					var hideFromMail  = (a.projectSettings["witsec-mailform-from-them"] ? "style='display:none'" : "");
+
+					// Show or hide the "Sender Form Name Field" field, based on whether "Sender as From Name" is checked
+					var hideFromNameThemField = (a.projectSettings["witsec-mailform-from-name-them"] == false ? "style='display:none'" : "");
 
 					// Display modal window with settings
 					mbrApp.showDialog({
@@ -110,13 +128,13 @@
 						body: [
 							'<form>',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-to" class="col-sm-4 col-form-label">To Email</label>',
+							'      <label for="witsec-mailform-to" class="col-sm-5 col-form-label">To Email</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-to" placeholder="' + mbrApp.getUserInfo()["email"] + '" value="' + a.projectSettings["witsec-mailform-to"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-from-them" class="col-sm-4 col-form-label">Sender as From Email</label>',
+							'      <label for="witsec-mailform-from-them" class="col-sm-5 col-form-label">Sender as From Email</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
 							'          <label style="width: 100%">',
@@ -127,37 +145,42 @@
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-from-div" ' + hideFromMail + '>',
-							'      <label for="witsec-mailform-from" class="col-sm-4 col-form-label">From Email</label>',
+							'      <label for="witsec-mailform-from" class="col-sm-5 col-form-label">From Email</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-from" placeholder="' + mbrApp.getUserInfo()["email"] + '" value="' + a.projectSettings["witsec-mailform-from"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-from-name-them" class="col-sm-4 col-form-label">Sender as From Name</label>',
+							'      <label for="witsec-mailform-from-name-them" class="col-sm-5 col-form-label">Sender as From Name</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
 							'          <label style="width: 100%">',
 							'            <input type="checkbox" id="witsec-mailform-from-name-them" name="witsec-mailform-from-name-them" ' + (a.projectSettings["witsec-mailform-from-name-them"] ? "checked" : "") + ">",
 							'            <span class="toggle" style="margin-top: -6px;"></span>',
 							'          </label>',
-							'          (only if "name" is a POST variable, otherwise "From Name" will be used)',
 							'        </div>',
 							'      </div>',
 							'    </div>',
+							'    <div class="form-group row witsec-mailform-from-name-them-field-div" ' + hideFromNameThemField + '>',
+							'      <label for="witsec-mailform-from-name-them-field" class="col-sm-5 col-form-label">Sender Name Form Field</label>',
+							'      <div class="col-sm-7">',
+							'        <input type="text" class="form-control" id="witsec-mailform-from-name-them-field" placeholder="{name}" value="' + a.projectSettings["witsec-mailform-from-name-them-field"] + '">',
+							'      </div>',
+							'    </div>',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-from-name" class="col-sm-4 col-form-label">From Name</label>',
+							'      <label for="witsec-mailform-from-name" class="col-sm-5 col-form-label">From Name</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-from-name" placeholder="' + mbrApp.getUserInfo()["email"] + '" value="' + a.projectSettings["witsec-mailform-from-name"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-template" class="col-sm-4 col-form-label">Email Template</label>',
+							'      <label for="witsec-mailform-template" class="col-sm-5 col-form-label">Email Template</label>',
 							'      <div class="col-sm-7">',
 							'        <textarea class="form-control" style="height:188px" id="witsec-mailform-template">' + a.projectSettings["witsec-mailform-template"] + '</textarea>',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row">',
-							'      <label class="col-sm-4 col-form-label">reCAPTCHA v3</label>',
+							'      <label class="col-sm-5 col-form-label">reCAPTCHA v3</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
 							'          <label style="width: 100%">',
@@ -168,20 +191,20 @@
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
-							'      <label for="witsec-mailform-sitekey" class="col-sm-4 col-form-label">Site Key</label>',
+							'      <label for="witsec-mailform-sitekey" class="col-sm-5 col-form-label">Site Key</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-recaptcha-sitekey" value="' + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
-							'      <label for="witsec-mailform-secretkey" class="col-sm-4 col-form-label">Secret Key</label>',
+							'      <label for="witsec-mailform-secretkey" class="col-sm-5 col-form-label">Secret Key</label>',
 							'      <div class="col-sm-7">',
 							'        <input type="text" class="form-control" id="witsec-mailform-recaptcha-secretkey" value="' + a.projectSettings["witsec-mailform-recaptcha-secretkey"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
-							'      <label for="witsec-mailform-score" class="col-sm-4 col-form-label">Score</label>',
-							'      <div class="col-sm-4">',
+							'      <label for="witsec-mailform-score" class="col-sm-5 col-form-label">Score</label>',
+							'      <div class="col-sm-5">',
 							'        <select id="witsec-mailform-recaptcha-score" name="witsec-mailform-recaptcha-score" class="form-control" style="color:#fff">',
 							'          <option value="0.1">0.1</option>',
 							'          <option value="0.2">0.2</option>',
@@ -200,7 +223,7 @@
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
-							'      <label class="col-sm-4 col-form-label">Hide Badge</label>',
+							'      <label class="col-sm-5 col-form-label">Hide Badge</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
 							'          <label style="width: 100%">',
@@ -283,21 +306,69 @@
 								}
 
 								// Everything seems OK, let's save it
-								a.projectSettings["witsec-mailform-to"]                  = $("#witsec-mailform-to").val();
-								a.projectSettings["witsec-mailform-from"]                = $("#witsec-mailform-from").val();
-								a.projectSettings["witsec-mailform-from-them"]           = $("#witsec-mailform-from-them").prop("checked");
-								a.projectSettings["witsec-mailform-from-name"]           = $("#witsec-mailform-from-name").val();
-								a.projectSettings["witsec-mailform-from-name-them"]      = $("#witsec-mailform-from-name-them").prop("checked");
-								a.projectSettings["witsec-mailform-template"]            = $("#witsec-mailform-template").val();
-								a.projectSettings["witsec-mailform-recaptcha"]           = $("#witsec-mailform-recaptcha").prop("checked");
-								a.projectSettings["witsec-mailform-recaptcha-sitekey"]   = $("#witsec-mailform-recaptcha-sitekey").val();
-								a.projectSettings["witsec-mailform-recaptcha-secretkey"] = $("#witsec-mailform-recaptcha-secretkey").val();
-								a.projectSettings["witsec-mailform-recaptcha-score"]     = $("#witsec-mailform-recaptcha-score option:selected").val();
-								a.projectSettings["witsec-mailform-recaptcha-hidebadge"] = $("#witsec-mailform-recaptcha-hidebadge").prop("checked");
+								a.projectSettings["witsec-mailform-to"]                   = $("#witsec-mailform-to").val();
+								a.projectSettings["witsec-mailform-from"]                 = $("#witsec-mailform-from").val();
+								a.projectSettings["witsec-mailform-from-them"]            = $("#witsec-mailform-from-them").prop("checked");
+								a.projectSettings["witsec-mailform-from-name"]            = $("#witsec-mailform-from-name").val();
+								a.projectSettings["witsec-mailform-from-name-them"]       = $("#witsec-mailform-from-name-them").prop("checked");
+								a.projectSettings["witsec-mailform-from-name-them-field"] = $("#witsec-mailform-from-name-them-field").val();
+								a.projectSettings["witsec-mailform-template"]             = $("#witsec-mailform-template").val();
+								a.projectSettings["witsec-mailform-recaptcha"]            = $("#witsec-mailform-recaptcha").prop("checked");
+								a.projectSettings["witsec-mailform-recaptcha-sitekey"]    = $("#witsec-mailform-recaptcha-sitekey").val();
+								a.projectSettings["witsec-mailform-recaptcha-secretkey"]  = $("#witsec-mailform-recaptcha-secretkey").val();
+								a.projectSettings["witsec-mailform-recaptcha-score"]      = $("#witsec-mailform-recaptcha-score option:selected").val();
+								a.projectSettings["witsec-mailform-recaptcha-hidebadge"]  = $("#witsec-mailform-recaptcha-hidebadge").prop("checked");
 							}
 						}
 						]
 					})
+				});
+
+				// Do things for a single block only
+				a.Core.addFilter("getResultHTMLcomponent", function(html, block) {
+
+					// Only do things if the mailform has been enabled AND the current section contains a witsec form (aka a form tag containing 'witsecSendMail')
+					if ( a.projectSettings["witsec-mailform"] && /<\s*form[^>]*witsecSendMail[^>]*>/gmi.test(html) ) {
+						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
+						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function(data) {
+							// Replace the variables with the correct values
+							php = data;
+							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
+							php = php.replace(/{from}/g, a.projectSettings["witsec-mailform-from"]);
+							php = php.replace(/{from-them}/g, (a.projectSettings["witsec-mailform-from-them"] ? "1" : "0") );
+							php = php.replace(/{from-name}/g, a.projectSettings["witsec-mailform-from-name"]);
+							php = php.replace(/{from-name-them}/g, (a.projectSettings["witsec-mailform-from-name-them"] ? "1" : "0") );
+							php = php.replace(/{from-name-them-field}/g, (a.projectSettings["witsec-mailform-from-name-them-field"] ? a.projectSettings["witsec-mailform-from-name-them-field"] : "{name}"));
+							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
+							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "3" : "0") );
+							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
+							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
+						});
+
+						// If reCAPTCHA is enabled...
+						if (a.projectSettings["witsec-mailform-recaptcha"]) {
+
+							// Add reCAPTCHA Javascript and sitekey to the page
+							var scripts = "\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>";
+							scripts +=    "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";
+
+							// If the user chose to hide the badge
+							if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
+								scripts += "\n<style>.grecaptcha-badge { display: none !important;}</style>";
+							}
+
+							// Replace the section tag with 'itself' and add the scripts
+							html = html.replace(/(<\s*section[^>]*>)/gmi, "$1\n" + scripts);
+						}
+
+						// Change the <a> submit button to an actual <button>
+						html = html.replace(/(<\s*)a([^>]*type=['"]{1}submit['"]{1}[^>]*>[\w\W]*)(<\/a>)/gmi, "$1button$2</button>");
+
+						// Put the values of the witsec-html attribute inside the tag that has it
+						html = html.replace(/(<\s*[^<]+?)witsec-html=['"]{1}(.+)['"]{1}([^>]*>)[\w\W]*?(<\/.+>)/gmi, "$1$3$2$4");
+					}
+
+					return html;
 				});
 
 				// Add our own file to the list of to-publish files
@@ -314,86 +385,7 @@
 
 				// Loop through all the files that need to be published (this is all the files of the website, plus whatever we defined ourselves), this saves the 'parsed' php to an actual file
 				a.addFilter("publishTemplating", function(b, pageName) {
-					return pageName == "mail.php" ? php : b
-				})
-
-				// Do things on publish
-				a.addFilter("publishHTML", function(b) {
-
-					// Only do things if the mailform has been enabled
-					if (a.projectSettings["witsec-mailform"]) {
-
-						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
-						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function(data) {
-							// Replace the variables with the correct values
-							php = data;
-							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
-							php = php.replace(/{from}/g, a.projectSettings["witsec-mailform-from"]);
-							php = php.replace(/{from-them}/g, (a.projectSettings["witsec-mailform-from-them"] ? "1" : "0") );
-							php = php.replace(/{from-name}/g, a.projectSettings["witsec-mailform-from-name"]);
-							php = php.replace(/{from-name-them}/g, (a.projectSettings["witsec-mailform-from-name-them"] ? "1" : "0") );
-							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
-							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "3" : "0") );
-							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
-							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
-						});
-
-						// Remove any code before DOCTYPE (don't worry, we'll put it back later)
-						var pattern = /^([\w\W]*?)<!DOCTYPE html>/mi;
-						var beforeDocType = b.match(pattern);
-						b = b.replace(pattern, "");
-
-						// Rename html/head/body elements and remove DOCTYPE, so we don't lose them when we want to get them back from jQuery (there must be a better way, right?)
-						b = b.replace(/<!DOCTYPE html>/igm, "");					
-						b = b.replace(/<([/]?)(html|head|body)/igm, "<$1$2x");
-
-						// Hide PHP using HTML comment tags, as jQuery doesn't understand these tags and distorts them beyond repair
-						b = b.replace(/(<\?[\w\W]+?\?>)/gmi, "<!--$1-->");
-
-						// jQuery that B
-						j = $(b);
-
-						// Add reCAPTCHA Javascript and sitekey to the page, if reCAPTCHA is enabled
-						if (a.projectSettings["witsec-mailform-recaptcha"]) {
-
-							// Add reCAPTCHA script and sitekey to the pages that contain a witsec mailform
-							j.find(".witsec-mailform").first().prepend("\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>");
-							j.find(".witsec-mailform").first().prepend("\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>");
-
-							// If the user chose to hide the badge
-							if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
-								j.find(".witsec-mailform").first().prepend("\n<style>.grecaptcha-badge { display: none !important;}</style>");
-							}
-						}
-
-						// Remove the witsec-mailform class from any element
-						j.find(".witsec-mailform").removeClass("witsec-mailform");
-
-						// Change the <a> submit button to an actual <button> and copy all classes along
-						j.find('a[type="submit"].witsec-btn-submit').replaceWith(function () {
-							return $('<button type="submit">' + this.innerHTML + '</button>').attr("class", $(this).attr("class") );
-						});
-
-						// Put the values of the witsec-html attribute inside the tag that has it
-						j.find("[witsec-html]").each(function(){
-							$(this).html( $(this).attr("witsec-html") );
-						});
-						j.find("[witsec-html]").removeAttr("witsec-html");
-
-						// Step out of jQuery
-						b = j.prop("outerHTML");
-
-						// Restore PHP tags to their former glory
-						b = b.replace(/<!--(<\?[\w\W]+?\?>)-->/gmi, "$1");
-
-						// Rename the elements back
-						b = b.replace(/<([/]?)(html|head|body)x/igm, "<$1$2");
-
-						// re-add code (if any) before DOCTYPE, including DOCTYPE itself
-						b = (beforeDocType ? beforeDocType[1] : "") + "<!DOCTYPE html>\n" + b;
-					}
-
-					return b
+					return a.projectSettings["witsec-mailform"] && pageName == "mail.php" ? php : b
 				});
 			}
 		}
