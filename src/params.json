@@ -1,7 +1,7 @@
 {
-    "name": "Mailform v6",
+    "name": "Mailform v7",
     "alias": "witsec-mailform",
-    "version": 6,
+    "version": 7,
     "minAppVersion": "4.10.17",
     "components" : [
 		{

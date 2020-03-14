@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v7 (2020-03-14)
+
+- Fixed compatibility with Mobirise v5
+
 ## v6 (2020-02-08)
 
 - Overhauled some internal workings. The extension is now using regex rather than transform html to a DOM object and back, so we no longer have to worry about PHP being present or not. This actually made the code a whole lot better to read and we removed a bunch of classes and such that weren't needed anymore

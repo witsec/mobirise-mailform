@@ -1,4 +1,4 @@
-(function(jQuery, mbrApp) {
+defineM("witsec-mailform", function(g, mbrApp, tr) {
 	mbrApp.regExtension({
 		name: "witsec-mailform",
 		events: {
@@ -390,4 +390,4 @@
 			}
 		}
 	})
-})(jQuery, mbrApp);
+}, ["jQuery", "mbrApp", "TR()"]);
