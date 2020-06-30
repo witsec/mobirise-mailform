@@ -2,66 +2,73 @@
 
     <mbr-parameters>
     <!-- Block parameters controls (Blue "Gear" panel) -->
-        <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
-        <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
-
-        <input type="checkbox" title="Show Title" name="showTitle" checked>
-        <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
-      	<input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
-
-        <input type="text" title="Subject" name="txtSubject" value="Newsletter Subscription">  
-        <input type="text" title="Success Message" name="txtSuccess" value="Thank you for subscribing to our newsletter!">
-        <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
-      
-        <fieldset type="background" name="bg" parallax>
-            <input type="image" title="Background Image" value="../_images/background1.jpg" parallax>
-            <input type="color" title="Background Color" value="#ffffff" selected>
-            <input type="video" title="Background Video" value="http://www.youtube.com/watch?v=uNCr7NdOJgw">
-        </fieldset>
-        <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked>
-        <input type="color" title="Overlay Color" name="overlayColor" value="#efefef" condition="overlay && bg.type !== 'color'">
-        <input type="range" inline title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.8" condition="overlay && bg.type !== 'color'">
+      <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
+      <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
+  
+      <input type="checkbox" title="Show Title" name="showTitle" checked>
+      <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
+      <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
+      <input type="checkbox" title="Confirmation Below Form" name="confirmationBelow">
+  
+      <input type="text" title="Subject" name="txtSubject" value="Newsletter Subscription">  
+      <input type="text" title="Success Message" name="txtSuccess" value="Thank you for subscribing to our newsletter!">
+      <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
+    
+      <fieldset type="background" name="bg" parallax>
+          <input type="image" title="Background Image" value="../_images/background1.jpg" parallax>
+          <input type="color" title="Background Color" value="#ffffff" selected>
+          <input type="video" title="Background Video" value="http://www.youtube.com/watch?v=uNCr7NdOJgw">
+      </fieldset>
+      <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked>
+      <input type="color" title="Overlay Color" name="overlayColor" value="#efefef" condition="overlay && bg.type !== 'color'">
+      <input type="range" inline title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.3" condition="overlay && bg.type !== 'color'">
     <!-- End block parameters -->
     </mbr-parameters>
-
+  
     <div class="mbr-overlay" mbr-if="overlay && bg.type!== 'color'" mbr-style="{'opacity': overlayOpacity, 'background-color': overlayColor}">
     </div>
-
+  
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="title col-12 col-lg-8">
-                <h2 mbr-if="showTitle" class="align-center pb-2 mbr-fonts-style" mbr-theme-style="display-2">
-                    SUBSCRIBE FORM
-                </h2>
-                <h3 mbr-if="showSubtitle" class="mbr-section-subtitle align-center pb-5 mbr-light mbr-fonts-style" mbr-theme-style="display-5" data-app-selector=".mbr-section-subtitle">
-                    Subscribe to our Newsletter
-                </h3>
-            </div>
+      <div class="row justify-content-center">
+        <div class="title col-12 col-lg-8">
+          <h2 mbr-if="showTitle" class="align-center pb-2 mbr-fonts-style" mbr-theme-style="display-2">
+            SUBSCRIBE FORM
+          </h2>
+          <h3 mbr-if="showSubtitle" class="mbr-section-subtitle align-center pb-5 mbr-light mbr-fonts-style" mbr-theme-style="display-5" data-app-selector=".mbr-section-subtitle">
+            Subscribe to our Newsletter
+          </h3>
         </div>
-
-        <div class="row py-2 justify-content-center">
-            <div class="col-12 col-lg-6  col-md-8 ">
-              	<form action="mail.php" method="post" class="mbr-form" onsubmit="witsecSendMail(this)">
-                  	<input type="hidden" name="subject" value="{{txtSubject}}">
-	                <div class="row">
-                        <div hidden="hidden" class="alert alert-success col-12" witsec-html="{{txtSuccess}}"></div>
-                        <div hidden="hidden" class="alert alert-danger col-12" witsec-html="{{txtFail}}"></div>
-                    </div>
-                    <div class="dragArea row">
-                        <div class="form-group col" data-for="email">
-                            <input type="email" name="email" placeholder="Email" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
-                        </div>
-                        <div class="col-auto input-group-btn " mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd">
-                          	<a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SUBSCRIBE</a>
-                        </div>
-                    </div>
-                </form>
+      </div>
+  
+      <div class="row py-2 justify-content-center">
+        <div class="col-12 col-lg-6  col-md-8 ">
+          <form class="mbr-form" onsubmit="witsecSendMail(this)">
+            <input type="hidden" name="subject" value="{{txtSubject}}">
+  
+            <div class="row" mbr-class="{ 'flex-column': !confirmationBelow, 'flex-column-reverse': confirmationBelow }">
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <div hidden="hidden" class="alert alert-success col-12" mbr-theme-style="display-7" witsec-html="{{txtSuccess}}"></div>
+                  <div hidden="hidden" class="alert alert-danger col-12" mbr-theme-style="display-7" witsec-html="{{txtFail}}"></div>
+                </div>
+              </div>
+  
+              <div class="row">
+                <div class="form-group col" data-for="email">
+                  <input type="email" name="email" placeholder="Email" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
+                </div>
+                <div class="col-auto input-group-btn " mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd">
+                  <a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SUBSCRIBE</a>
+                </div>
+              </div>
             </div>
-            <div mbr-if="showTerms" class="col-md-12 justify-content-center form-group">
-              <p class="mbr-section-terms mbr-text mbr-fonts-style" mbr-theme-style="display-7" mbr-html="terms" data-app-edit="content" data-app-selector=".mbr-section-terms">
-                This form uses Google's reCAPTCHA. By continuing you agree to the <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms</a>.
-              </p>
-            </div>
+          </form>
         </div>
+        <div mbr-if="showTerms" class="col-md-12 justify-content-center form-group">
+          <p class="mbr-section-terms mbr-text mbr-fonts-style" mbr-theme-style="display-7" mbr-html="terms" data-app-edit="content" data-app-selector=".mbr-section-terms">
+            This form uses Google's reCAPTCHA. By continuing you agree to the <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms</a>.
+          </p>
+        </div>
+      </div>
     </div>
-</section>
+  </section>

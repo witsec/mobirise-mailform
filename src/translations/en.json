@@ -1,0 +1,174 @@
+{
+    "title": "English",
+    "language": "en",
+    "type": "addon",
+    "groups": {
+        "witsec-mailform": [
+            {
+                "phrase": "Edit",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Warning",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "When you hide the reCAPTCHA badge, make sure to provide links to the Privacy and Terms pages of Google. The 'Terms' switch under the block options (gear icon) will do this for you. If you completely hide it, Google may choose to discontinue further spam checking.",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Mailform Settings",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "General",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Sender",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Autorespond",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Recipient(s)",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "From Email",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "From Name",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Email Template",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Disable Button after Submit",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Sender as From Email",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Sender as Reply-To",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Sender as From Name",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Sender Name Form Field(s)",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "using reply-to instead of from often avoids e-mails being marked as spam",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Optional Subject Prefix",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Custom Subject",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Site Key",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Secret Key",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Score",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "default",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Hide Badge",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "the secret key will be removed from the published project.mobirise file",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "HELP",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "CANCEL",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "OK",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Please supply a valid e-mail address for Recipient(s).",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "Please supply a valid e-mail address for From Email.",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "The From Name cannot be empty.",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "You can't use double quotes in the From Name.",
+                "translate": "",
+                "active": true
+            },
+            {
+                "phrase": "The reCAPTCHA Site Key and Secret Key must contain a value.",
+                "translate": "",
+                "active": true
+            }
+        ]
+    }
+}

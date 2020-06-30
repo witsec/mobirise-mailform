@@ -4,7 +4,8 @@
         "condition": true,
         "priority": 5000,
         "files": [
-            "witsec-mailform/witsec-mailform.js"
+            "witsec-mailform/witsec-mailform.js",
+            "witsec-mailform/phpmailer.php"
         ]
     }
 ]

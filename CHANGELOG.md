@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v8 (2020-06-30)
+
+- Switched from using PHP's mail function to PHPMailer to make life a lot easier
+- Now using tabs in Mailform Settings window to make things more clear and less cluttered
+- Added autorespond, which allows you to automatically send an e-mail back to the sender (using variables like in the default e-mail template is possible as well)
+- Added feature to override the subject of an autorespond email
+- Added localization (only English available so far), not implemented everywhere yet
+- Added reply-to feature, so emails can be sent from your own domain, but with the sender's address as reply-to. This will reduce the chance of e-mails being marked as spam
+- Added feature to disable the submit button after submitting a form. It will be enabled when that action is finished. This prevents forms from being submitted twice and developers can style the disabled state of the button as well
+- Generated PHP files are no longer placed in the root of the website, but can now be found under assets/witsec-mailform/
+- If the reCAPTCHA Secret Key is set, it will be removed from the (published) project.mobirise file
+
 ## v7 (2020-03-14)
 
 - Fixed compatibility with Mobirise v5
