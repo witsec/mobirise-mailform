@@ -13,6 +13,12 @@ padding-bottom: (@paddingBottom * 15px);
   display: -webkit-flex;
 }
 
+& when (@confirmationBelow) {
+  .ws-form-alerts {
+    margin-top: 1rem;
+  }
+}
+
 .title {
   margin-bottom: 2rem;
 }
@@ -35,8 +41,37 @@ LABEL {
   margin-bottom: 0px;
 }
 
+.mbr-section-labels {
+  color: #232323;
+  padding: 0;
+  margin-bottom: .357em;
+  text-align: left;
+}
+
 .mbr-section-autorespond {
   text-align: center;
   color: #232323;
   margin-bottom: 0px;
+}
+
+.alert {
+  margin-bottom: 0;
+}
+
+.alert-success {
+  background-color: @bgColorSuccess;
+  color: @txtColorSuccess;
+}
+
+.alert-danger {
+  background-color: @bgColorError;
+  color: @txtColorError;
+}
+
+.btn {
+  display: inline-flex;
+}
+
+.hidden {
+  display: none;
 }

@@ -14,7 +14,8 @@ $template = "{template}";											// Mail Template
 $autorespondSubjectPrefix = "{autorespond-subjectprefix}";			// Autorespond Form Subject Prefix
 $autorespondSubject = "{autorespond-subject}";						// Autorespond Custom Subject
 $autorespondTemplate = "{autorespond-template}";					// Autorespond Template
-$rcp = ("{recaptcha}" == "3" ? true : false);						// Use reCAPTCHA (set to "3" if enabled, "0" if disabled)
+$rcp = ("{recaptcha}" == "1" ? true : false);						// Use reCAPTCHA
+$rcpVersion = "{recaptcha-version}";								// reCAPTCHA Version
 $rcpScore = "{recaptcha-score}";									// reCAPTCHA Score
 $rcpSecret = "{recaptcha-secretkey}";								// reCAPTCHA Secret Key
 
@@ -36,11 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$autorespond = (isset($_POST["autorespond"]) && $_POST["autorespond"] == "1" ? true : false);
 		unset($_POST["autorespond"]);
 
+		// Unset redirectURL if present
+		unset($_POST["redirectURL"]);
+
 		// Replace any \n breakline with a html breakline
 		$_POST = str_replace("\n", "<br>", $_POST);
 
 		// reCAPTCHA (only really does anything if reCAPTCHA is enabled)
-		CheckReCAPTCHA();
+		if ($rcp)
+			CheckReCAPTCHA();
 
 		// Send mail (to-address, Sender as From Email or predefined From Email, Sender as From Name or predefined From Name, subject, template)
 		if (SendPHPMail($to, ($fromThem ? $_POST["email"] : $from), ($fromThemReplyTo ? $_POST["email"] : null), SetFromName(), $subject, $template)) {
@@ -49,17 +54,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if ($autorespond) {
 				$arSubject = $autorespondSubject ?: trim($autorespondSubjectPrefix . " " . $subject);
 				if (! SendPHPMail($_POST["email"], $from, null, $fromName, $arSubject, $autorespondTemplate)) {
-					json(false, "An error occured with sending autorespond e-mail");
+					json(false, "An error occured with sending autorespond e-mail.");
 				}
 			}
 
 			json(true);
 		} else {
-			json(false, "An error occured with sending e-mail");
+			json(false, "An error occured with sending e-mail.");
 		}
 	}
 	catch (Exception $e) {
-		json(false, "An error occured");
+		json(false, "An error occured.");
 	}
 }
 
@@ -80,28 +85,41 @@ function json($success, $msg="") {
 
 // reCAPTCHA stuff
 function CheckReCAPTCHA() {
-	global $rcp, $rcpScore, $rcpSecret;
+	global $rcpScore, $rcpSecret, $rcpVersion;
 
-	if ($rcp) {
-		if (!isset($_POST["g-recaptcha-response"])) {
-			json(false, "POST did not contain g-recaptcha-response");
-		}
+	// Check if reCAPTCHA response is present
+	if (!isset($_POST["g-recaptcha-response"]))
+		json(false, "POST did not contain g-recaptcha-response.");
 
-		// Build POST request and execute it
-		$rcpUrl = 'https://www.google.com/recaptcha/api/siteverify';
-		$rcpResponse = $_POST["g-recaptcha-response"];
-		unset($_POST["g-recaptcha-response"]);	// Remove this, as we don't want this to end up in the template ;)
-		$rcpResponse = file_get_contents($rcpUrl . "?secret=" . $rcpSecret . "&response=" . $rcpResponse);
-		$rcpResponse = json_decode($rcpResponse, true);
+	// Check if function exists (we'll use this later on)
+	if (!function_exists("file_get_contents"))
+		json(false, "Dependency not installed on server.");
 
-		// Check response
+	// Build POST request and execute it
+	$rcpUrl = 'https://www.google.com/recaptcha/api/siteverify';
+	$rcpResponse = $_POST["g-recaptcha-response"];
+	unset($_POST["g-recaptcha-response"]);	// Remove this, as we don't want this to end up in the template ;)
+	$rcpResponse = file_get_contents($rcpUrl . "?secret=" . $rcpSecret . "&response=" . $rcpResponse);
+	$rcpResponse = json_decode($rcpResponse, true);
+
+	// Check if the reponse was valid json
+	if (!is_array($rcpResponse))
+		json(false, "Did not receive valid JSON from reCAPTCHA verification service or service not available.");
+
+	// Success is handled differently in v2 and v3
+	if ($rcpVersion == "2") {
 		if (!$rcpResponse["success"]) {
-			json(false, "Invalid reCAPTCHA token");
+			json(false, "Request did not pass reCAPTCHA: " . implode(", ", $rcpResponse["error-codes"]));
+		}
+	} else {
+		// Check response ('success' just means it was a valid call with valid tokens)
+		if (!$rcpResponse["success"]) {
+			json(false, "Invalid reCAPTCHA token: " . implode(", ", $rcpResponse["error-codes"]));
 		}
 
-		// Check score
-		if ($rcpResponse["score"] < intval($rcpScore)) {
-			json(false, "Request did not pass reCAPTCHA");
+		// Check score if we're using v3
+		if (rcpVersion == "3" && $rcpResponse["score"] < floatval($rcpScore)) {
+			json(false, "Request did not pass reCAPTCHA.");
 		}
 	}
 }
@@ -214,7 +232,7 @@ function SanitizeUserInput() {
 
 	// Check if at least "subject" and "email" exist in the $_POST vars
 	if ( !isset($_POST["subject"] ) || !isset($_POST["email"]) )
-		json(false, "Not all required fields are present");
+		json(false, "Not all required fields are present.");
 
 	// Check if a valid e-mail address is provided
 	if ( !filter_var($_POST["email"], FILTER_VALIDATE_EMAIL) )

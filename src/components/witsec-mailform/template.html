@@ -2,24 +2,53 @@
 
   <mbr-parameters>
   <!-- Block parameters controls (Blue "Gear" panel) -->
+    <header>Size</header>
     <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
     <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
+    <select title="Align Submit" name="alignSubmit">
+      <option value="">Left</option>
+      <option value="align-center" selected>Center</option>
+      <option value="align-right">Right</option>
+    </select>
 
+    <header>Show/Hide</header>
     <input type="checkbox" title="Show Title" name="showTitle" checked>
     <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
     <input type="checkbox" title="Show Phone" name="showPhone" checked>
+    <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
+
+    <header>Behaviour</header>
     <select title="Autorespond" name="autorespond">
       <option value="0" selected>Off</option>
       <option value="1">On</option>
       <option value="2">User Decision</option>
     </select>
-    <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
-
+    <select title="On Success" name="onsuccess">
+      <option value="0" selected>Stay</option>
+      <option value="1">Redirect</option>
+    </select>
     <input type="checkbox" title="Confirmation Below Form" name="confirmationBelow">
-    <input type="text" title="Subject" name="txtSubject" value="A message from your website.">  
-    <input type="text" title="Success Message" name="txtSuccess" value="Thanks for filling out the form!">
-    <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
 
+    <header condition="onsuccess == 1">RedirectURL</header>
+    <input type="text" title="Redirect to" name="redirectURL" value="thanks.html" condition="onsuccess == 1">
+
+    <header>Texts</header>
+    <input type="text" title="Subject" name="txtSubject" value="A message from your website.">
+    <input type="text" title="Success Message" name="txtSuccess" value="Thanks for filling out the form!" condition="onsuccess == 0">
+    <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
+    <select title="Align" name="alignAlert">
+      <option value selected>Left</option>
+      <option value="align-center">Center</option>
+      <option value="align-right">Right</option>
+    </select>
+
+    <header>Colors</header>
+    <input type="color" title="Success BG Color" name="bgColorSuccess" value="#70c770" condition="onsuccess == 0">
+    <input type="color" title="Success Text Color" name="txtColorSuccess" value="#ffffff" condition="onsuccess == 0">
+    <input type="color" title="Error BG Color" name="bgColorError" value="#ff4a52">
+    <input type="color" title="Error Text Color" name="txtColorError" value="#ffffff">
+
+    <header>Background</header>
     <fieldset type="background" name="bg" parallax>
         <input type="image" title="Background Image" value="../_images/background.jpg" parallax>
         <input type="color" title="Background Color" value="#ffffff" selected>
@@ -40,7 +69,7 @@
           CONTACT FORM
         </h2>
         <h3 mbr-if="showSubtitle" class="mbr-section-subtitle align-center mbr-light pb-3 mbr-fonts-style" mbr-theme-style="display-5" data-app-selector=".mbr-section-subtitle">
-          Easily add independent contact forms to your website.
+          Easily add independent contact forms to your website!
         </h3>
       </div>
     </div>
@@ -51,31 +80,32 @@
           <form class="mbr-form" onsubmit="witsecSendMail(this)">
             <input type="hidden" name="subject" value="{{txtSubject}}">
             <input type="hidden" name="autorespond" value="1" mbr-if="autorespond=='1'">
+            <input type="hidden" name="redirectURL" value="{{redirectURL}}" mbr-if="onsuccess=='1'">
 
             <div class="rowflexrev" mbr-class="{ 'flex-column': !confirmationBelow, 'flex-column-reverse': confirmationBelow }">
               <div class="row">
-                <div class="col-md-12 form-group">
-                  <div hidden="hidden" class="alert alert-success col-12" mbr-theme-style="display-7" witsec-html="{{txtSuccess}}"></div>
-                  <div hidden="hidden" class="alert alert-danger col-12" mbr-theme-style="display-7" witsec-html="{{txtFail}}"></div>
+                <div class="col-md-12 form-group ws-form-alerts">
+                  <div hidden="hidden" class="alert alert-success col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtSuccess}}" mbr-if="onsuccess=='0'"></div>
+                  <div hidden="hidden" class="alert alert-danger col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtFail}}"></div>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-4 form-group" mbr-class="{'col-md-6': !showPhone}">
-                  <label mbr-text mbr-theme-style="display-7" class="form-control-label mbr-fonts-style">Name</label>
+                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels">Name</p>
                   <input type="text" name="name" data-form-field="Name" mbr-theme-style="display-7" required="required" class="form-control">
                 </div>
                 <div class="col-md-4 form-group" mbr-class="{'col-md-6': !showPhone}">
-                  <label mbr-text mbr-theme-style="display-7" class="form-control-label mbr-fonts-style">Email</label>
+                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels">Email</p>
                   <input type="email" name="email" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
                 </div>
                 <div mbr-if="showPhone" class="col-md-4 form-group">
-                  <label mbr-text mbr-theme-style="display-7" class="form-control-label mbr-fonts-style">Phone</label>
+                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels">Phone</p>
                   <input type="tel" name="phone" data-form-field="Phone" mbr-theme-style="display-7" class="form-control">
                 </div>
                 <div class="col-md-12 form-group">
-                  <label mbr-text mbr-theme-style="display-7" class="form-control-label mbr-fonts-style">Message</label>
-                  <textarea name="message" data-form-field="Message" mbr-theme-style="display-7" class="form-control"></textarea>
+                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels">Message</p>
+                  <textarea name="message" data-form-field="Message" mbr-theme-style="display-7" required="required" class="form-control"></textarea>
                 </div>
                 <div mbr-if="autorespond=='2'" class="col-md-12 justify-content-center form-group">
                   <p class="mbr-section-autorespond mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond">
@@ -88,7 +118,8 @@
                     This form uses Google's reCAPTCHA. By continuing you agree to the <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms</a>.
                   </p>
                 </div>
-                <div class="col-md-12 input-group-btn align-center" mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd"><a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SEND FORM</a></div>
+                <div class="g-recaptcha col-md-12 form-group" mbr-class="{'hidden': !isPublish}"></div>
+                <div class="col-md-12 input-group-btn {{alignSubmit}}" mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd"><a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SEND FORM</a></div>
               </div>
             </div>
         </form>

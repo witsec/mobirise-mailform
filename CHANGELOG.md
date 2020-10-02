@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## v10 (2020-10-02)
+
+- Improved error handling in PHP regarding recaptcha to help find issues if/when they occur
+- Errors (detected) in Javascript now write to the browser's console
+- Required javascript files only get added when extension is enabled and a form is actually used
+- Added feature to redirect after succesfully submitting a form
+- Added possibility to change the background and text colors of the success and error messages
+- Added M3 block for M3 lovers
+- Added support for reCAPTCHA v2
+- Added feature to change background and font colors of alerts
+- Added feature to align submit button
+- Added feature to align the text of the alerts
+
+## v9 (unreleased)
+
 ## v8 (2020-06-30)
 
 - Switched from using PHP's mail function to PHPMailer to make life a lot easier

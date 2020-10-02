@@ -1,0 +1,79 @@
+<section
+	mbr-id="_anchor"
+	class="witsec-mailform mbr-section"
+	mbr-class-mbr-background="_params.bgImageRadio | unless _params.parallax"
+	mbr-class-mbr-parallax-background="_params.parallax | if _params.bgImageRadio"
+	mbr-bg-image="_params.bgImage | if _params.bgImageRadio"
+	mbr-bg-color="_params.bgColor | if _params.bgColorRadio">
+
+	<div class="mbr-overlay" mbr-if="_params.overlay | unless _params.bgColorRadio" mbr-opacity="_params.overlayOpacity" mbr-bg-color="_params.overlayColor"></div>
+
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="title col-12 col-lg-8">
+				<h2 mbr-html="title"
+					mbr-if="_params.showTitle"
+					class="mbr-section-title align-center pb-3 mbr-fonts-style display-2"
+					data-app-edit="content"
+					data-app-selector=".mbr-section-title">
+				</h2>
+				<h3 mbr-html="subtitle"
+					mbr-if="_params.showSubTitle"
+					class="mbr-section-subtitle align-center mbr-light pb-3 mbr-fonts-style display-5"
+					data-app-edit="content"
+					data-app-selector=".mbr-section-subtitle">
+				</h3>
+			</div>
+		</div>
+	</div>
+
+	<div class="mbr-section mbr-section-nopadding">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-lg-10 col-lg-offset-1">
+
+					<form class="mbr-form" onsubmit="witsecSendMail(this)">
+						<input type="hidden" name="subject" value="">
+						<input type="hidden" name="autorespond" value="1" mbr-if="_params.autorespond | eq 1">
+						<input type="hidden" name="redirectURL" mbr-value="_params.redirectURL" mbr-if="_params.onsuccess | eq 1">
+	
+						<div class="row">
+							<div class="col-md-12 form-group">
+								<div hidden="hidden" data-form-alert class="alert alert-success col-12 display-7" mbr-add-class="_params.alignAlert" mbr-text="_params.txtSuccess"></div>
+								<div hidden="hidden" data-form-alert class="alert alert-danger col-12 display-7"  mbr-add-class="_params.alignAlert" mbr-text="_params.txtError" mbr-if="_params.onsuccess | eq 0"></div>
+							</div>
+						</div>
+
+						<div class="row row-sm-offset">
+							<div mbr-class-col-md-4="_params.showPhone" mbr-add-class="'col-md-6' | unless _params.showPhone" class="form-group">
+								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="name"></p>
+								<input type="text" name="name" mbr-theme-style="display-7" required="required" class="form-control">
+							</div>
+							<div mbr-class-col-md-4="_params.showPhone" mbr-add-class="'col-md-6' | unless _params.showPhone" class="form-group">
+								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="email"></p>
+								<input type="email" name="email" mbr-theme-style="display-7" required="required" class="form-control">
+							</div>
+							<div mbr-if="_params.showPhone" class="col-md-4 form-group">
+								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="phone"></p>
+								<input type="tel" name="phone" mbr-theme-style="display-7" class="form-control">
+							</div>
+							<div class="col-md-12 form-group">
+								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="message"></p>
+								<textarea name="message" mbr-theme-style="display-7" class="form-control form-control-textarea" required="required"></textarea>
+							</div>
+							<div mbr-if="_params.autorespond | eq 2" class="col-md-12 justify-content-center form-group">
+								<p class="mbr-section-autorespond mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond" mbr-html="autorespond"></p>
+							</div>
+							<div mbr-if="_params.showTerms" class="col-md-12 justify-content-center form-group">
+								<p class="mbr-section-terms mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-terms" mbr-html="showTerms"></p>
+							</div>
+						</div>
+						<div class="g-recaptcha"></div>
+						<div mbr-html="buttons" data-app-edit="buttons" data-toolbar="-mbrLink,-mbrBtnAdd,-mbrBtnMove" mbr-add-class="_params.alignSubmit"></div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</section>

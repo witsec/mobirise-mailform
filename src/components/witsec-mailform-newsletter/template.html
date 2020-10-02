@@ -1,0 +1,100 @@
+<section class="witsec-mailform mbr-section form3" data-bg-video="{{bg.type == 'video' && bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
+
+  <mbr-parameters>
+  <!-- Block parameters controls (Blue "Gear" panel) -->
+    <header>Size</header>
+    <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
+    <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
+
+    <header>Show/Hide</header>
+    <input type="checkbox" title="Show Title" name="showTitle" checked>
+    <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
+    <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
+
+    <header>Behaviour</header>
+    <select title="On Success" name="onsuccess">
+      <option value="0" selected>Stay</option>
+      <option value="1">Redirect</option>
+    </select>
+    <input type="checkbox" title="Confirmation Below Form" name="confirmationBelow">
+
+    <header condition="onsuccess == 1">RedirectURL</header>
+    <input type="text" title="Redirect to" name="redirectURL" value="thanks.html" condition="onsuccess == 1">
+
+    <header>Texts</header>
+    <input type="text" title="Placeholder" name="txtEmailPlaceholder" value="Email">
+    <input type="text" title="Subject" name="txtSubject" value="A message from your website.">
+    <input type="text" title="Success Message" name="txtSuccess" value="Thanks for filling out the form!" condition="onsuccess == 0">
+    <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
+    <select title="Align" name="alignAlert">
+      <option value selected>Left</option>
+      <option value="align-center">Center</option>
+      <option value="align-right">Right</option>
+    </select>
+
+    <header>Colors</header>
+    <input type="color" title="Success BG Color" name="bgColorSuccess" value="#70c770" condition="onsuccess == 0">
+    <input type="color" title="Success Text Color" name="txtColorSuccess" value="#ffffff" condition="onsuccess == 0">
+    <input type="color" title="Error BG Color" name="bgColorError" value="#ff4a52">
+    <input type="color" title="Error Text Color" name="txtColorError" value="#ffffff">
+
+    <header>Background</header>
+    <fieldset type="background" name="bg" parallax>
+        <input type="image" title="Background Image" value="../_images/background1.jpg" parallax>
+        <input type="color" title="Background Color" value="#ffffff" selected>
+        <input type="video" title="Background Video" value="http://www.youtube.com/watch?v=uNCr7NdOJgw">
+    </fieldset>
+    <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked>
+    <input type="color" title="Overlay Color" name="overlayColor" value="#efefef" condition="overlay && bg.type !== 'color'">
+    <input type="range" inline title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.3" condition="overlay && bg.type !== 'color'">
+  <!-- End block parameters -->
+  </mbr-parameters>
+
+  <div class="mbr-overlay" mbr-if="overlay && bg.type!== 'color'" mbr-style="{'opacity': overlayOpacity, 'background-color': overlayColor}">
+  </div>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="title col-12 col-lg-8">
+        <h2 mbr-if="showTitle" class="align-center pb-2 mbr-fonts-style" mbr-theme-style="display-2">
+          SUBSCRIBE FORM
+        </h2>
+        <h3 mbr-if="showSubtitle" class="mbr-section-subtitle align-center pb-5 mbr-light mbr-fonts-style" mbr-theme-style="display-5" data-app-selector=".mbr-section-subtitle">
+          Subscribe to our Newsletter
+        </h3>
+      </div>
+    </div>
+
+    <div class="row py-2 justify-content-center">
+      <div class="col-12 col-lg-6  col-md-8 ">
+        <form class="mbr-form" onsubmit="witsecSendMail(this)">
+          <input type="hidden" name="subject" value="{{txtSubject}}">
+          <input type="hidden" name="redirectURL" value="{{redirectURL}}" mbr-if="onsuccess=='1'">
+
+          <div class="row" mbr-class="{ 'flex-column': !confirmationBelow, 'flex-column-reverse': confirmationBelow }">
+            <div class="row">
+              <div class="col-md-12 form-group">
+                <div hidden="hidden" class="alert alert-success col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtSuccess}}"></div>
+                <div hidden="hidden" class="alert alert-danger col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtFail}}"></div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group col" data-for="email">
+                <input type="email" name="email" placeholder="{{txtEmailPlaceholder}}" data-form-field="Email" mbr-theme-style="display-7" required="required" class="form-control">
+              </div>
+              <div class="col-auto input-group-btn " mbr-buttons="true" mbr-theme-style="display-4" data-toolbar="-mbrBtnMove,-mbrBtnLink,-mbrBtnAdd"><a type="submit" class="btn btn-primary btn-form" data-app-placeholder="Type Text">SUBSCRIBE</a></div>
+            </div>
+          </div>
+
+          <div class="rcpContainer" mbr-class="{'hidden': !isPublish}"><div class="g-recaptcha"></div></div>
+        </form>
+      </div>
+      <div mbr-if="showTerms" class="col-md-12 justify-content-center form-group">
+        <p class="mbr-section-terms mbr-text mbr-fonts-style" mbr-theme-style="display-7" mbr-html="terms" data-app-edit="content" data-app-selector=".mbr-section-terms">
+          This form uses Google's reCAPTCHA. By continuing you agree to the <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> and <a href="https://policies.google.com/terms" target="_blank">Terms</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

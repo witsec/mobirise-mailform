@@ -19,8 +19,6 @@ padding-bottom: (@paddingBottom * 15px);
 }
 
 .input-group-btn .btn {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
   margin: 0 !important;
 }
 
@@ -45,9 +43,36 @@ a.btn-white:not([href]):not([tabindex]) {
     max-width: 300px;
     width: 100%;
   }
+
+  .rcpContainer {
+    margin-top: 1rem !important;
+  }
 }
 
 .mbr-section-terms {
   text-align: center;
   margin-bottom: 0px;
+}
+
+.alert {
+  margin-bottom: 0;
+}
+
+.alert-success {
+  background-color: @bgColorSuccess;
+  color: @txtColorSuccess;
+}
+
+.alert-danger {
+  background-color: @bgColorError;
+  color: @txtColorError;
+}
+
+.rcpContainer {
+  width: 304px;
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none;
 }

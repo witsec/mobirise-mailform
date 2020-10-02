@@ -6,6 +6,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 			load: function () {
 				var a = this;
 				var php = "";
+				var phpmailer = "";
+				var mailformjs = "";
 
 				// Stop processing if the current website is AMP
 				if (mbrApp.isAMP())
@@ -97,10 +99,22 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 				mbrApp.$body.on("change", "#witsec-mailform-recaptcha", function () {
 					if ($("#witsec-mailform-recaptcha").prop("checked")) {
 						$(".witsec-mailform-recaptcha-div").show();
+
+						if ($("#witsec-mailform-recaptcha-version option:selected").val() == "3")
+							$(".witsec-mailform-recaptchav3-div").show();
 					}
 					else {
 						$(".witsec-mailform-recaptcha-div").hide();
+						$(".witsec-mailform-recaptchav3-div").hide();
 					}
+				});
+
+				// Respond to changing reCAPTCHA version
+				mbrApp.$body.on("change", "#witsec-mailform-recaptcha-version", function () {
+					if ($("#witsec-mailform-recaptcha-version option:selected").val() == "3")
+						$(".witsec-mailform-recaptchav3-div").show();
+					else
+						$(".witsec-mailform-recaptchav3-div").hide();
 				});
 
 				// Respond to hiding the reCAPTCHA badge
@@ -125,6 +139,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					a.projectSettings["witsec-mailform-autorespond-subject"] = a.projectSettings["witsec-mailform-autorespond-subject"] || "";
 					a.projectSettings["witsec-mailform-autorespond-template"] = a.projectSettings["witsec-mailform-autorespond-template"] || "Hi {name},\n\nThank you for your message. We'll get back to you as soon as we can.\nHere's the information you sent us:\n\n{formdata}\n\n---\nHave a nice day.";
 					a.projectSettings["witsec-mailform-recaptcha"] = a.projectSettings["witsec-mailform-recaptcha"] || false;
+					a.projectSettings["witsec-mailform-recaptcha-version"] = a.projectSettings["witsec-mailform-recaptcha-version"] || "3";
 					a.projectSettings["witsec-mailform-recaptcha-sitekey"] = a.projectSettings["witsec-mailform-recaptcha-sitekey"] || "";
 					a.projectSettings["witsec-mailform-recaptcha-secretkey"] = a.projectSettings["witsec-mailform-recaptcha-secretkey"] || "";
 					a.projectSettings["witsec-mailform-recaptcha-score"] = a.projectSettings["witsec-mailform-recaptcha-score"] || "0.5";
@@ -142,6 +157,9 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					// Show or hide extra reCAPTCHA fields
 					var hideReCaptcha = (a.projectSettings["witsec-mailform-recaptcha"] ? "" : "style='display:none'");
 
+					// Show or hide extra reCAPTCHA fields
+					var hideReCaptchaV3 = (a.projectSettings["witsec-mailform-recaptcha"] && a.projectSettings["witsec-mailform-recaptcha-version"] == "3" ? "" : "style='display:none'");
+
 					// Display modal window with settings
 					mbrApp.showDialog({
 						title: TR("Mailform Settings"),
@@ -149,7 +167,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						body: [
 							'<style>',
 							'.nav .active .ws-mf-pills { background-color:#69c9d6 !important }',
-							'.nav :not(.active) .ws-mf-pills { color:#000 !important }',
+							'.nav :not(.active) .ws-mf-pills { color:' + (mbrApp.appSettings["darkMode"] ? "#fff" : "#000") + ' !important }',
+							'.nav :not(.active) .ws-mf-pills:hover { background-color: #a8a8a8 !important }',
 							'</style>',
 
 							'<ul class="nav nav-pills">',
@@ -287,7 +306,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'  <!-- TAB RECAPTCHA -->',
 							'  <div class="tab-pane fade" id="ws-mf-tab-recaptcha">',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-recaptcha" class="col-sm-5 col-form-label">reCAPTCHA v3</label>',
+							'      <label for="witsec-mailform-recaptcha" class="col-sm-5 col-form-label">Enable reCAPTCHA</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
 							'          <label style="width: 100%">',
@@ -295,6 +314,18 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'            <span class="toggle" style="margin-top: -6px;"></span>',
 							'          </label>',
 							'        </div>',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
+							'      <label class="col-sm-5 col-form-label">' + TR("Version") + '</label>',
+							'      <div class="col-sm-5">',
+							'        <select id="witsec-mailform-recaptcha-version" name="witsec-mailform-recaptcha-version" class="form-control" style="color:#fff">',
+							'          <option value="2">v2 (' + TR("checkbox") + ')</option>',
+							'          <option value="3">v3</option>',
+							'        </select>',
+							'        <script>',
+							'        $("#witsec-mailform-recaptcha-version").val("' + a.projectSettings["witsec-mailform-recaptcha-version"] + '");',
+							'        </script>',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
@@ -309,7 +340,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'        <input type="text" class="form-control" id="witsec-mailform-recaptcha-secretkey" value="' + a.projectSettings["witsec-mailform-recaptcha-secretkey"] + '">',
 							'      </div>',
 							'    </div>',
-							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
+							'    <div class="form-group row witsec-mailform-recaptchav3-div" ' + hideReCaptchaV3 + '>',
 							'      <label class="col-sm-5 col-form-label">' + TR("Score") + '</label>',
 							'      <div class="col-sm-5">',
 							'        <select id="witsec-mailform-recaptcha-score" name="witsec-mailform-recaptcha-score" class="form-control" style="color:#fff">',
@@ -329,7 +360,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'        </script>',
 							'      </div>',
 							'    </div>',
-							'    <div class="form-group row witsec-mailform-recaptcha-div" ' + hideReCaptcha + '>',
+							'    <div class="form-group row witsec-mailform-recaptchav3-div" ' + hideReCaptchaV3 + '>',
 							'      <label for="witsec-mailform-recaptcha-hidebadge" class="col-sm-5 col-form-label">' + TR("Hide Badge") + '</label>',
 							'      <div class="col-sm-7">',
 							'        <div class="togglebutton">',
@@ -428,8 +459,11 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 										help = `
 										<h4>Help - Recaptcha</h4>
 
-										<i>reCAPTCHA v3</i><br>
+										<i>reCAPTCHA</i><br>
 										Switch to enable/disabled reCAPTCHA.<br><br>
+
+										<i>Version</i><br>
+										Select reCAPTCHA v2 (visible) or v3 (invisible).<br><br>
 
 										<i>Site Key</i><br>
 										The site key is used to invoke reCAPTCHA service on your website.<br><br>
@@ -512,11 +546,13 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									a.projectSettings["witsec-mailform-autorespond-subject"] = ($("#witsec-mailform-autorespond-subjecttype").val() == "0" ? "" : $("#witsec-mailform-autorespond-subject").val().trim());
 									a.projectSettings["witsec-mailform-autorespond-template"] = $("#witsec-mailform-autorespond-template").val();
 									a.projectSettings["witsec-mailform-recaptcha"] = $("#witsec-mailform-recaptcha").prop("checked");
+									a.projectSettings["witsec-mailform-recaptcha-version"] = $("#witsec-mailform-recaptcha-version option:selected").val();
 									a.projectSettings["witsec-mailform-recaptcha-sitekey"] = $("#witsec-mailform-recaptcha-sitekey").val();
 									a.projectSettings["witsec-mailform-recaptcha-secretkey"] = $("#witsec-mailform-recaptcha-secretkey").val();
 									a.projectSettings["witsec-mailform-recaptcha-score"] = $("#witsec-mailform-recaptcha-score option:selected").val();
 									a.projectSettings["witsec-mailform-recaptcha-hidebadge"] = $("#witsec-mailform-recaptcha-hidebadge").prop("checked");
 									a.projectSettings["witsec-mailform-disable-button"] = $("#witsec-mailform-disable-button").prop("checked");
+									mbrApp.runSaveProject();
 								}
 							}
 						]
@@ -529,8 +565,18 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					// Only do things if the mailform has been enabled AND the current section contains a witsec form (aka a form tag containing 'witsecSendMail')
 					if (a.projectSettings["witsec-mailform"] && /<\s*form[^>]*witsecSendMail[^>]*>/gmi.test(html)) {
 
+						// Read the phpmailer file from this addon's directory
+						$.get(mbrApp.getAddonsDir() + "/witsec-mailform/scripts/mailform.js", function (data) {
+							mailformjs = data;
+						});
+
+						// Read the phpmailer file from this addon's directory
+						$.get(mbrApp.getAddonsDir() + "/witsec-mailform/scripts/phpmailer.php", function (data) {
+							phpmailer = data;
+						});
+
 						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
-						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function (data) {
+						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/scripts/mail.php', function (data) {
 							// Replace the variables with the correct values
 							php = data;
 							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
@@ -544,34 +590,59 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							php = php.replace(/{autorespond-subject}/g, a.projectSettings["witsec-mailform-autorespond-subject"]);
 							php = php.replace(/{autorespond-template}/g, a.projectSettings["witsec-mailform-autorespond-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
 							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
-							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "3" : "0"));
+							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "1" : "0"));
+							php = php.replace(/{recaptcha-version}/g, (a.projectSettings["witsec-mailform-recaptcha-version"] || "3") );
 							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
 							php = php.replace(/{recaptcha-score}/g, a.projectSettings["witsec-mailform-recaptcha-score"]);
 						});
+
+						// If reCAPTCHA v2 is used, but the "g-recaptcha" <div> isn't present, we can add it. This is the var we use for that
+						var rcpV2Div = "";
 
 						// If reCAPTCHA is enabled...
 						if (a.projectSettings["witsec-mailform-recaptcha"]) {
 
 							// Add reCAPTCHA Javascript and sitekey to the page
-							var scripts = "\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>";
-							scripts += "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";
+							var scripts = "";
+							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "3") {
+								scripts = "\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>";
+								scripts += "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";
 
-							// If the user chose to hide the badge
-							if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
-								scripts += "\n<style>.grecaptcha-badge { display: none !important;}</style>";
-							}
+								// If the user chose to hide the badge
+								if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
+									scripts += "\n<style>.grecaptcha-badge { display: none !important;}</style>";
+								}
+							} else
+								scripts = "\n<script src=\"https://www.google.com/recaptcha/api.js\" async defer></script>";
 
 							// Replace the section tag with 'itself' and add the scripts
 							html = html.replace(/(<\s*section[^>]*>)/gmi, "$1\n" + scripts);
-						}
 
+							// Regex pattersn
+							var patternAll = /<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*>[\w\W]*?<\/div>/mi;	// Grab entire element
+							var patternBegin = /(<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*)>/mi;				// Grab begin tag only
+
+							// If we're using v2, check if the "g-recaptcha" <div> exists. If it doesn't, add it
+							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "2") {
+								if (patternAll.test(html)) {
+									html = html.replace(patternBegin, "$1 data-sitekey=\"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\">");
+								}
+								else
+									rcpV2Div = "<div class=\"g-recaptcha\" data-sitekey=\"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></div>" + "\n";
+							}
+						}
+						
+						// If reCAPTCHA is disabled or if it's enabled AND we're using v3, remove the "g-recaptcha" <div>
+						if ( !a.projectSettings["witsec-mailform-recaptcha"] || (a.projectSettings["witsec-mailform-recaptcha"] && a.projectSettings["witsec-mailform-recaptcha-version"] == "3") )
+							html = html.replace(/<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*>[\w\W]*?<\/div>/mi, "");
+						
 						// If the submit button needs to be disabled when the form is sent
 						if (a.projectSettings["witsec-mailform-disable-button"]) {
 							html = html.replace(/(<\s*form[^>]*>)/gmi, "$1\n" + "<input type=\"hidden\" name=\"disableButton\" value=\"1\">");
 						}
 
-						// Change the <a> submit button to an actual <button>
-						html = html.replace(/(<\s*)a([^>]*type=['"]{1}submit['"]{1}[^>]*>[\w\W]*?)(<\/a>)/gmi, "$1button$2</button>");
+						// Change the <a> submit button to an actual <button> and if applicable, add the "g-recaptcha" <div>
+						html = html.replace(/(<\s*)a([^>]*type=['"]{1}submit['"]{1}[^>]*>[\w\W]*?)(<\/a>)/gmi, rcpV2Div + "$1button$2</button>");
 
 						// Put the values of the witsec-html attribute inside the tag that has it
 						html = html.replace(/(<\s*[^<]+?)witsec-html=['"]{1}(.+)['"]{1}([^>]*>)[\w\W]*?(<\/.+>)/gmi, "$1$3$2$4");
@@ -584,13 +655,11 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 				a.addFilter("publishFiles", function (b, c) {
 					// Only add this file to the export list if the mailform is enabled
 					if (a.projectSettings["witsec-mailform"]) {
-						b.push({
-							srcList: [{
-								src: "mail.php",
-								filter: "template"
-							}],
-							dest: "assets/witsec-mailform/mail.php"
-						});
+						b.push(
+							{ srcList: [{ src: "mail.php",      filter: "template" }], dest: "assets/witsec-mailform/mail.php" },
+							{ srcList: [{ src: "phpmailer.php", filter: "template" }], dest: "assets/witsec-mailform/phpmailer.php" },
+							{ srcList: [{ src: "mailform.js",   filter: "template" }], dest: "assets/witsec-mailform/mailform.js" }
+						);
 					}
 
 					return b
@@ -604,6 +673,16 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							return php;
 						}
 
+						// Get and return phpmailer.php
+						if (filename == "phpmailer.php") {
+							return phpmailer;
+						}
+
+						// Get and return mailform.js
+						if (filename == "mailform.js") {
+							return mailformjs;
+						}
+
 						// Remove the secret key from the published project.mobirise file if it's present
 						if (filename == "project.mobirise" && a.projectSettings["witsec-mailform-recaptcha-secretkey"] != "")
 							return b.replace(/("witsec-mailform-recaptcha-secretkey": ")(.+)(",)/g, "$1$3");
@@ -612,6 +691,16 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					// Return the default
 					return b
 				});
+
+				// On publish, add the Javascript if mailform is enabled
+                a.addFilter("publishHTML", function(b) {
+					if (a.projectSettings["witsec-mailform"]) {
+						b = b.replace(/(<\/body>)/i, "<script src=\"assets/witsec-mailform/mailform.js\"></script>\n</body>");
+					}
+
+					return b
+				});
+
 			}
 		}
 	})
