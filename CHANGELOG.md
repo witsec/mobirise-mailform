@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v10.1 (2020-12-16)
+
+- Fixed variable in PHP causing issues
+
 ## v10 (2020-10-02)
 
 - Improved error handling in PHP regarding recaptcha to help find issues if/when they occur

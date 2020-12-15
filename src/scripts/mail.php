@@ -118,7 +118,7 @@ function CheckReCAPTCHA() {
 		}
 
 		// Check score if we're using v3
-		if (rcpVersion == "3" && $rcpResponse["score"] < floatval($rcpScore)) {
+		if ($rcpVersion == "3" && $rcpResponse["score"] < floatval($rcpScore)) {
 			json(false, "Request did not pass reCAPTCHA.");
 		}
 	}
