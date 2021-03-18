@@ -152,7 +152,12 @@ function RenderTemplate($template) {
 	$POST["formdata"] = $formdata;
 
 	// Add some additional variables to the play
-	$POST["ip"] = $_SERVER["REMOTE_ADDR"];
+	if(!empty(@$_SERVER["HTTP_CF_CONNECTING_IP"]))  {
+		$POST["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+	}
+	else  {
+		$POST["ip"] = $_SERVER["REMOTE_ADDR"];
+	}
 	$POST["date"] = date('Y-m-d H:i:s');
 
 	// Loop through all variables of the template
