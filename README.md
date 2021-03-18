@@ -12,3 +12,5 @@ If you want to improve this extension - awesome! Simply start coding and create 
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+All credits for this project and code belong to Mark Witsec, witsec.nl. 
+He has many other cool mobirise extensions too that you should check out on his website.
