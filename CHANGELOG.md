@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v11 (2021-xx-xx)
+## v11 (2021-04-05)
 
 - Added SMTP support (site settings)
 - Added support for attachments / file uploads (site settings), including a white list for Mime Types
