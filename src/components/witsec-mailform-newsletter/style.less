@@ -9,6 +9,10 @@ padding-bottom: (@paddingBottom * 15px);
   background-image: url(@bg-value);
 }
 
+.showAlerts {
+  display: block !important;
+}
+
 .mbr-section-subtitle {
   color: #767676;
 }
@@ -60,12 +64,10 @@ a.btn-white:not([href]):not([tabindex]) {
 
 .alert-success {
   background-color: @bgColorSuccess;
-  color: @txtColorSuccess;
 }
 
 .alert-danger {
   background-color: @bgColorError;
-  color: @txtColorError;
 }
 
 .rcpContainer {
@@ -75,4 +77,14 @@ a.btn-white:not([href]):not([tabindex]) {
 
 .hidden {
   display: none;
+}
+
+.mbr-alert-success {
+  text-align: left;
+  color: #ffffff;
+}
+
+.mbr-alert-danger {
+  text-align: left;
+  color: #ffffff;
 }

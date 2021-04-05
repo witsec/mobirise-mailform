@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## v11 (2021-xx-xx)
+
+- Added SMTP support (site settings)
+- Added support for attachments / file uploads (site settings), including a white list for Mime Types
+- Added additional recipients (site settings, point to a 'recipient ID' in the block parameters)
+- Added simple status page (when you access `http(s)://<yourdomain>/assets/witsec-mailform/mail.php?status`)
+- Added simple in-app Form Builder (block)
+- Added simple CAPTCHA (for M4/M5) as alternative to reCAPTCHA
+- Improved all M4/M5 blocks (error messages can now be edited and styled for example)
+- Improved error handling
+- Upgraded PHPMailer to v6.3.0
+- All required files (except mail.php) are plugins again
+- Added notification on preview/publish for Mailform blocks that don't contain `plugins="witsec-mailform"`. This notification contains a 'CHANGE' button that fixes the code for the user, if they choose to
+- Fixed a bug where forms containing checkbox arrays weren't processed properly (and didn't end up in the email)
+- Fixed bug in M3 block where if you had GDPR -or- autorespond user decision enabled, you'd get both checkboxes on preview/publish. Re-add the block if you're using this already
+- Added GDPR option to forms (when one doesn't want to use the in-app feature)
+- Using `onsubmit="witsecSendMail(this)"` in form tags is no longer necessary (as long as the "witsec-mailform" class is used in the section)
+- Added error codes, AJAX calls now return error codes too. The messages can also be customized
+- Added "mtxt" and "rtxt", which are form specific mini-template variables. Variable "mtxt" ends up in the normal mail only, while "rtxt" only ends up in the response email. Using variables in the mini-template is allowed.
+
 ## v10.1 (2020-12-16)
 
 - Fixed variable in PHP causing issues

@@ -4,33 +4,38 @@ defineM("witsec-mailform", function(d, mbrApp, TR) {
 		{
 			"witsec-mailform-m3": {
 				_group: "witsec",
+				_plugins: "witsec-mailform",
 				_params: {
-					paddingTop:      { type: "range",  title: "Top Padding",                 min: 0, max: 8, step: 1, default: 4 },
-					paddingBottom:   { type: "range",  title: "Bottom Padding",              min: 0, max: 8, step: 1, default: 4 },
-					alignSubmit:     { type: "select", title: "Align Submit",                default: "", values: { "": "Left", "align-center": "Center", "align-right": "Right" } },
-					showTitle:       { type: "switch", title: "Show Title",                  default: true },
-					showSubTitle:    { type: "switch", title: "Show Subtitle",               default: true },
-					showPhone:       { type: "switch", title: "Show Phone",                  default: true },
-					showTerms:       { type: "switch", title: "Show reCAPTCHA Terms",        default: false },
-					autorespond:     { type: "select", title: "Autorespond",                 default: 0, values: { 0: "Off", 1: "On", 2: "User Decision" } },
-					onsuccess:       { type: "select", title: "On Success",                  default: 0, values: { 0: "Stay", 1: "Redirect" } },
-					redirectURL:	 { type: "text",   title: "Redirect to (if applicable)", default: "thanks.html" },
-					txtSubject:      { type: "text",   title: "Subject",                     default: "A message from your website." },
-					txtSuccess:      { type: "text",   title: "Success Message",             default: "Thanks for filling out the form!" },
-					txtError:        { type: "text",   title: "Error Message",               default: "An error occured. Please try again." },
-					alignAlert:      { type: "select", title: "Align",                       default: "", values: { "": "Left", "align-center": "Center", "align-right": "Right" } },
-					bgColorSuccess:  { type: "color",  title: "Success BG Color",            default: "#70c770" },
-					txtColorSuccess: { type: "color",  title: "Success Text Color",          default: "#ffffff" },
-					bgColorError:    { type: "color",  title: "Error BG Color",              default: "#ff4a52" },
-					txtColorError:   { type: "color",  title: "Error BG Color",              default: "#ffffff" },
-					bgImageRadio:    { type: "radio",  title: "Background Image",            name: "bgType", default: false },
-					bgImage:         { type: "image",  title: "",                            default: "@ADDON_DIR@_images/background.jpg", condition: ["bgImageRadio"] },
-					parallax:        { type: "switch", title: "Parallax",                    default: true, condition: ["bgImageRadio"] },
-					bgColorRadio:    { type: "radio",  title: "Background Color",            name: "bgType", default: true },
-					bgColor:         { type: "color",  title: "Color",                       default: "#fff",  condition: ["bgColorRadio"] },
-					overlay:         { type: "switch", title: "Overlay",                     default: false, condition: ["!bgColorRadio"] },
-					overlayColor:    { type: "color",  title: "Color",                       default: "#222", condition: ["overlay", "!bgColorRadio"] },
-					overlayOpacity:  { type: "range",  title: "Opacity",                     min: 0, max: 1, step: .1, default: .5, condition: ["overlay", "!bgColorRadio"] }
+					paddingTop:      { type: "range",    title: "Top Padding",                 min: 0, max: 8, step: 1, default: 4 },
+					paddingBottom:   { type: "range",    title: "Bottom Padding",              min: 0, max: 8, step: 1, default: 4 },
+					alignSubmit:     { type: "select",   title: "Align Submit",                default: "", values: { "": "Left", "align-center": "Center", "align-right": "Right" } },
+					showTitle:       { type: "switch",   title: "Show Title",                  default: true },
+					showSubTitle:    { type: "switch",   title: "Show Subtitle",               default: true },
+					showPhone:       { type: "switch",   title: "Show Phone",                  default: true },
+					showGDPR:        { type: "switch",   title: "Show GDPR",                   default: false },
+					showTerms:       { type: "switch",   title: "Show reCAPTCHA Terms",        default: false },
+					autorespond:     { type: "select",   title: "Autorespond",                 default: 0, values: { 0: "Off", 1: "On", 2: "User Decision" } },
+					onsuccess:       { type: "select",   title: "On Success",                  default: 0, values: { 0: "Stay", 1: "Redirect" } },
+					redirectURL:	 { type: "text",     title: "Redirect to (if applicable)", default: "thanks.html" },
+					recipientID:     { type: "text",     title: "Alternative Recipient (use Address Book ID as defined in Site Settings)", default: "" },
+					mtxt:            { type: "textarea", title: "Mail Mini-Template",          value: ""},
+					rtxt:            { type: "textarea", title: "Response Mini-Template (if applicable)", value: ""},
+					txtSubject:      { type: "text",     title: "Subject",                     default: "A message from your website." },
+					txtSuccess:      { type: "text",     title: "Success Message",             default: "Thanks for filling out the form!" },
+					txtError:        { type: "text",     title: "Error Message",               default: "An error occured. Please try again." },
+					alignAlert:      { type: "select",   title: "Align",                       default: "", values: { "": "Left", "align-center": "Center", "align-right": "Right" } },
+					bgColorSuccess:  { type: "color",    title: "Success BG Color",            default: "#70c770" },
+					txtColorSuccess: { type: "color",    title: "Success Text Color",          default: "#ffffff" },
+					bgColorError:    { type: "color",    title: "Error BG Color",              default: "#ff4a52" },
+					txtColorError:   { type: "color",    title: "Error BG Color",              default: "#ffffff" },
+					bgImageRadio:    { type: "radio",    title: "Background Image",            name: "bgType", default: false },
+					bgImage:         { type: "image",    title: "",                            default: "@ADDON_DIR@_images/background.jpg", condition: ["bgImageRadio"] },
+					parallax:        { type: "switch",   title: "Parallax",                    default: true, condition: ["bgImageRadio"] },
+					bgColorRadio:    { type: "radio",    title: "Background Color",            name: "bgType", default: true },
+					bgColor:         { type: "color",    title: "Color",                       default: "#fff",  condition: ["bgColorRadio"] },
+					overlay:         { type: "switch",   title: "Overlay",                     default: false, condition: ["!bgColorRadio"] },
+					overlayColor:    { type: "color",    title: "Color",                       default: "#222", condition: ["overlay", "!bgColorRadio"] },
+					overlayOpacity:  { type: "range",    title: "Opacity",                     min: 0, max: 1, step: .1, default: .5, condition: ["overlay", "!bgColorRadio"] }
 				},
 				_onParamsChange: function(b, a, c) {
 					"paddingTop" != a &&
@@ -60,7 +65,8 @@ defineM("witsec-mailform", function(d, mbrApp, TR) {
 				email: "Email",
 				phone: "Phone",
 				message: "Message",
-				autorespond: "<p class='mbr-section-autorespond mbr-fonts-style'><input type='checkbox' name='autorespond' value='1'> Send me a copy</p>",
+				autorespond: "Send me a copy",
+				gdpr: "By continuing you agree to our <a href='terms.html'>Terms of Service</a> and <a href='policy.html'>Privacy Policy</a>.",
 				showTerms: "This form uses Google's reCAPTCHA. By continuing you agree to the <a href='https://policies.google.com/privacy' target='_blank'>Privacy</a> and <a href='https://policies.google.com/terms' target='_blank'>Terms</a>.",
 				buttons: '<a data-app-btn="true" type="submit" class="btn btn-primary">SEND FORM</a>',
 				_styles: {
@@ -81,9 +87,16 @@ defineM("witsec-mailform", function(d, mbrApp, TR) {
 						"min-height": "188px"
 					},
 					".mbr-section-autorespond": {
-						"text-align": "center",
+						"text-align": "left",
 						"color": "#232323",
-						"margin-bottom": "0"
+						"margin-bottom": "0",
+						"display": "inline"
+					},
+					".mbr-section-gdpr": {
+						"text-align": "left",
+						"color": "#232323",
+						"margin-bottom": "0",
+						"display": "inline"
 					},
 					".mbr-section-terms": {
 						"text-align": "center",

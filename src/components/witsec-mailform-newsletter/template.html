@@ -1,7 +1,9 @@
-<section class="witsec-mailform mbr-section form3" data-bg-video="{{bg.type == 'video' && bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
+<section class="witsec-mailform mbr-section form3" plugins="witsec-mailform" data-bg-video="{{bg.type == 'video' && bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
 
   <mbr-parameters>
   <!-- Block parameters controls (Blue "Gear" panel) -->
+    <header>Global settings can be changed in the <a href="#" onclick="$('.projects-show').click()">Site Settings</a> of your website</header>
+
     <header>Size</header>
     <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
     <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
@@ -11,7 +13,16 @@
     <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
     <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
 
-    <header>Behaviour</header>
+    <header>Placeholders</header>
+    <input type="text" title="Email" name="txtEmailPlaceholder" value="Email">
+
+    <header>Form Options</header>
+    <input type="text" title="Alternative Recipient (use Address Book ID as defined in Site Settings)" name="recipientID" value>
+    <input type="text" title="Subject" name="txtSubject" value="A message from your website.">
+    <select title="Autorespond" name="autorespond">
+      <option value="0" selected>Off</option>
+      <option value="1">On</option>
+    </select>
     <select title="On Success" name="onsuccess">
       <option value="0" selected>Stay</option>
       <option value="1">Redirect</option>
@@ -21,22 +32,14 @@
     <header condition="onsuccess == 1">RedirectURL</header>
     <input type="text" title="Redirect to" name="redirectURL" value="thanks.html" condition="onsuccess == 1">
 
-    <header>Texts</header>
-    <input type="text" title="Placeholder" name="txtEmailPlaceholder" value="Email">
-    <input type="text" title="Subject" name="txtSubject" value="A message from your website.">
-    <input type="text" title="Success Message" name="txtSuccess" value="Thanks for filling out the form!" condition="onsuccess == 0">
-    <input type="text" title="Error Message" name="txtFail" value="An error occured. Please try again.">
-    <select title="Align" name="alignAlert">
-      <option value selected>Left</option>
-      <option value="align-center">Center</option>
-      <option value="align-right">Right</option>
-    </select>
+    <header>Mini Templates (optional)</header>
+    <textarea name="mtxt" title="Normal Mail"></textarea>
+    <textarea name="rtxt" title="Response Mail" condition="autorespond > 0"></textarea>
 
-    <header>Colors</header>
+    <header>Alerts</header>
+    <input type="checkbox" title="Show Alerts in Mobirise" name="showAlerts" checked>
     <input type="color" title="Success BG Color" name="bgColorSuccess" value="#70c770" condition="onsuccess == 0">
-    <input type="color" title="Success Text Color" name="txtColorSuccess" value="#ffffff" condition="onsuccess == 0">
     <input type="color" title="Error BG Color" name="bgColorError" value="#ff4a52">
-    <input type="color" title="Error Text Color" name="txtColorError" value="#ffffff">
 
     <header>Background</header>
     <fieldset type="background" name="bg" parallax>
@@ -67,15 +70,19 @@
 
     <div class="row py-2 justify-content-center">
       <div class="col-12 col-lg-6  col-md-8 ">
-        <form class="mbr-form" onsubmit="witsecSendMail(this)">
+        <form class="mbr-form">
+          <input type="hidden" name="recipient" value="{{recipientID}}" mbr-if="recipientID">
           <input type="hidden" name="subject" value="{{txtSubject}}">
           <input type="hidden" name="redirectURL" value="{{redirectURL}}" mbr-if="onsuccess=='1'">
+          <input type="hidden" name="autorespond" value="1" mbr-if="autorespond=='1'">
+          <input type="hidden" name="mtxt" value="{{mtxt}}" mbr-if="mtxt">
+          <input type="hidden" name="rtxt" value="{{rtxt}}" mbr-if="rtxt &amp;&amp; autorespond > 0">
 
           <div class="row" mbr-class="{ 'flex-column': !confirmationBelow, 'flex-column-reverse': confirmationBelow }">
             <div class="row">
               <div class="col-md-12 form-group">
-                <div hidden="hidden" class="alert alert-success col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtSuccess}}"></div>
-                <div hidden="hidden" class="alert alert-danger col-12 {{alignAlert}}" mbr-theme-style="display-7" witsec-html="{{txtFail}}"></div>
+                <div hidden="hidden" mbr-text class="alert alert-success col-12 mbr-alert-success mbr-fonts-style" mbr-theme-style="display-7" mbr-class="{showAlerts: !isPublish && showAlerts}" data-app-edit="content" data-app-selector=".mbr-alert-success">Thanks for filling out the form!</div>
+                <div hidden="hidden" mbr-text class="alert alert-danger col-12 mbr-alert-danger mbr-fonts-style" mbr-theme-style="display-7" mbr-class="{showAlerts: !isPublish && showAlerts}" data-app-edit="content" data-app-selector=".mbr-alert-danger">An error occured. Please try again.</div>
               </div>
             </div>
 

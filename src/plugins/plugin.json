@@ -1,0 +1,13 @@
+[
+    {
+        "name": "witsec-mailform",
+        "priority": 100,
+        "files": [
+            "witsec-mailform/mailform.js",
+            "witsec-mailform/PHPMailer.php",
+            "witsec-mailform/Exception.php",
+            "witsec-mailform/SMTP.php",
+            "witsec-mailform/captcha.php"
+        ]
+    }
+]

@@ -1,6 +1,7 @@
 <section
 	mbr-id="_anchor"
 	class="witsec-mailform mbr-section"
+	plugins="witsec-mailform"
 	mbr-class-mbr-background="_params.bgImageRadio | unless _params.parallax"
 	mbr-class-mbr-parallax-background="_params.parallax | if _params.bgImageRadio"
 	mbr-bg-image="_params.bgImage | if _params.bgImageRadio"
@@ -32,10 +33,13 @@
 			<div class="row">
 				<div class="col-xs-12 col-lg-10 col-lg-offset-1">
 
-					<form class="mbr-form" onsubmit="witsecSendMail(this)">
+					<form class="mbr-form">
+						<input type="hidden" name="recipient" mbr-value="_params.recipientID" mbr-if="_params.recipientID">
 						<input type="hidden" name="subject" value="">
 						<input type="hidden" name="autorespond" value="1" mbr-if="_params.autorespond | eq 1">
 						<input type="hidden" name="redirectURL" mbr-value="_params.redirectURL" mbr-if="_params.onsuccess | eq 1">
+						<input type="hidden" name="mtxt" mbr-value="_params.mtxt" mbr-if="_params.mtxt">
+						<input type="hidden" name="rtxt" mbr-value="_params.rtxt" mbr-if="_params.rtxt">
 	
 						<div class="row">
 							<div class="col-md-12 form-group">
@@ -61,8 +65,14 @@
 								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="message"></p>
 								<textarea name="message" mbr-theme-style="display-7" class="form-control form-control-textarea" required="required"></textarea>
 							</div>
-							<div mbr-if="_params.autorespond | eq 2" class="col-md-12 justify-content-center form-group">
-								<p class="mbr-section-autorespond mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond" mbr-html="autorespond"></p>
+							<div class="col-md-12 justify-content-center form-group" mbr-if="_params.autorespond | eq 2">
+								<input type="checkbox" name="autorespond" value="1">
+								<p class="mbr-section-autorespond mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond" mbr-html="autorespond">
+								</p>
+							</div>
+							<div class="col-md-12 justify-content-center form-group" mbr-if="_params.showGDPR">
+								<input type="checkbox" name="GDPR" value="1" required>
+								<p class="mbr-section-gdpr mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-gdpr" mbr-html="gdpr"></p>
 							</div>
 							<div mbr-if="_params.showTerms" class="col-md-12 justify-content-center form-group">
 								<p class="mbr-section-terms mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-terms" mbr-html="showTerms"></p>

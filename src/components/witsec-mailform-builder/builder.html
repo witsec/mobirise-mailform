@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+<head>
+    <title>Generate Parameters and HTML</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <style>
+    body {
+        margin: 10px;
+    }
+    
+    textarea {
+        height: 500px !important;
+        font-family: monospace;
+        font-size: 8px;
+        white-space: nowrap;
+    }
+    </style>
+</head>
+<body>
+
+<button type="button" class="btn btn-primary" onclick="generate()">Generate Parameters and HTML code</button>
+<input type="number" id="fields" value="12" step="1" min="1" max="50">
+<input type="number" id="options" value="10" step="1" min="1" max="20">
+<input type="checkbox" id="compact" checked> <label for="compact">Compact</label>
+
+<div class="form-row pt-3">
+    <div class="form-group col-md-6">
+        <label for="params">Parameters</label>
+        <textarea class="form-control" id="params"></textarea>
+    </div>
+    <div class="form-group col-md-6">
+        <label for="html">HTML</label>
+        <textarea class="form-control" id="html"></textarea>
+    </div>
+</div>
+
+<script>
+// Options on how many form fields there should be
+let paramHeaderOptions = `<option value="{n}">{n}</option>`;
+
+// Sort of header of Form Fields part
+let paramHeader = `<!-- Form Fields -->
+<header>Form Fields</header>
+<header>A field named 'email' *must* be present</header>
+<select title="Amount" name="fields">
+  {paramHeaderOptions}
+</select>`;
+
+// Options for parameters
+let paramOptions = `<input type="text" title="Value {o}" name="f{n}_o{o}" value="{v}" condition="fields >= {n} && f{n}_t=='checkbox' || fields >= {n} && f{n}_t=='radio' || fields >= {n} && f{n}_t=='select'">`;
+
+// HTML for parameters
+let params = `<header condition="fields >= {n}">📑 Field {n}</header>
+<select title="Type" name="f{n}_t" condition="fields >= {n}">
+  <option value="checkbox">Checkbox</option>
+  <option value="date">Date</option>
+  <option value="datetime-local">Date/Time</option>
+  <option value="email">Email</option>
+  <option value="file">File</option>
+  <option value="radio">Radio</option>
+  <option value="select">Select</option>
+  <option value="text" selected>Text</option>
+  <option value="textemail">Text | Email</option>
+  <option value="text2">Text | Text</option>
+  <option value="text3">Text | Text | Text</option>
+  <option value="time">Time</option>
+  <option value="textarea">Textarea</option>
+</select>
+<input type="checkbox" title="Show Label" name="f{n}_l" checked condition="fields >= {n}">
+<select title="Width" name="f{n}_w" condition="fields >= {n} && f{n}_t=='date' || fields >= {n} && f{n}_t=='datetime-local' || fields >= {n} && f{n}_t=='email' || fields >= {n} && f{n}_t=='file' || fields >= {n} && f{n}_t=='select' || fields >= {n} && f{n}_t=='text' || fields >= {n} && f{n}_t=='time'">
+  <option value="100">100%</option>
+  <option value="75">75%</option>
+  <option value="50">50%</option>
+  <option value="25">25%</option>
+</select>
+<input type="text" inline title="Name"          name="f{n}"     value="name-f{n}"   condition="fields >= {n}">
+<input type="text" inline title="Placeholder"   name="f{n}_p"                       condition="fields >= {n} && f{n}_t == 'date' || fields >= {n} && f{n}_t == 'time' || fields >= {n} && f{n}_t == 'datetime-local' || fields >= {n} && f{n}_t == 'email' || fields >= {n} && f{n}_t == 'select' || fields >= {n} && f{n}_t == 'text' || fields >= {n} && f{n}_t == 'text2' || fields >= {n} && f{n}_t == 'text3' || fields >= {n} && f{n}_t == 'textemail' || fields >= {n} && f{n}_t == 'textarea'">
+<input type="checkbox"    title="Required"      name="f{n}_r"   checked             condition="fields >= {n} && f{n}_t != 'checkbox'">
+<input type="text" inline title="Name 2"        name="f{n}_2"   value="name-f{n}_2" condition="fields >= {n} && f{n}_t == 'text2' || fields >= {n} && f{n}_t == 'text3' || fields >= {n} && f{n}_t == 'textemail'">
+<input type="text" inline title="Placeholder 2" name="f{n}_2_p"                     condition="fields >= {n} && f{n}_t == 'text2' || fields >= {n} && f{n}_t == 'text3' || fields >= {n} && f{n}_t == 'textemail'">
+<input type="checkbox"    title="Required 2"    name="f{n}_2_r" checked             condition="fields >= {n} && f{n}_t == 'text2' || fields >= {n} && f{n}_t == 'text3' || fields >= {n} && f{n}_t == 'textemail'">
+<input type="text" inline title="Name 3"        name="f{n}_3"   value="name-f{n}_3" condition="fields >= {n} && f{n}_t == 'text3'">
+<input type="text" inline title="Placeholder 3" name="f{n}_3_p"                     condition="fields >= {n} && f{n}_t == 'text3'">
+<input type="checkbox"    title="Required 3"    name="f{n}_3_r" checked             condition="fields >= {n} && f{n}_t == 'text3'">
+
+<input type="text" inline title="Min" name="f{n}_min_d"  value="2018-01-01"       condition="fields >= {n} && f{n}_t=='date'">
+<input type="text" inline title="Min" name="f{n}_min_dt" value="2018-01-01T00:00" condition="fields >= {n} && f{n}_t=='datetime-local'">
+<input type="text" inline title="Min" name="f{n}_min_t"  value="09:00"            condition="fields >= {n} && f{n}_t=='time'">
+<input type="text" inline title="Max" name="f{n}_max_d"  value="2030-01-01"       condition="fields >= {n} && f{n}_t=='date'">
+<input type="text" inline title="Max" name="f{n}_max_dt" value="2030-01-01T00:00" condition="fields >= {n} && f{n}_t=='datetime-local'">
+<input type="text" inline title="Max" name="f{n}_max_t"  value="18:00"            condition="fields >= {n} && f{n}_t=='time'">
+
+{paramOptions}`;
+
+
+// HTML for line breaks
+let htmlBRCheck = `<br mbr-if="showBR && f{n}_t=='checkbox' && f{n}_o{o}">`;
+let htmlBRRadio = `<br mbr-if="showBR && f{n}_t=='radio' && f{n}_o{o}">`;
+
+// HTML for checkboxes
+let htmlCheck = `  <input type="checkbox" name="{{f{n}}}[]" id="{{f{n}_o{o}}}" value="{{f{n}_o{o}}}" mbr-if="f{n}_t=='checkbox' && f{n}_o{o}"> <label mbr-text="" mbr-theme-style="display-7" for="{{f{n}_o{o}}}" class="mbr-section-labels mbr-text mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_t=='checkbox' && f{n}_o{o}">Label</label>`;
+
+// HTML for radios
+let htmlRadio = `  <input type="radio" name="{{f{n}}}" id="{{f{n}_o{o}}}" value="{{f{n}_o{o}}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='radio' && f{n}_o{o}"> <label mbr-text="" mbr-theme-style="display-7" for="{{f{n}_o{o}}}" class="mbr-section-labels mbr-text mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_t=='radio' && f{n}_o{o}">Label</label>`;
+
+// HTML for select options
+let htmlOptions = `    <option witsec-html="{{f{n}_o{o}}}" mbr-if="f{n}_o{o}">Option is visible on preview/publish</option>`;
+
+// HTML for select
+let htmlSelect = `  <select class="form-control" mbr-theme-style="display-7" name="{{f{n}}}" id="{{f{n}}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='select'">
+    <option witsec-html="{{f{n}_p}}" value disabled selected mbr-if="f{n}_p">Placeholder (if present) is visible on preview publish</option>
+{options}
+  </select>`;
+
+// HTML
+let html = `<div class="col-md-4 form-group" mbr-class="{'col-md-6': f{n}_t=='text2' || f{n}_t=='textemail'}" mbr-if="fields >= {n} && f{n}_t=='text2' || fields >= {n} && f{n}_t=='text3' || fields >= {n} && f{n}_t=='textemail'">
+  <p class="mbr-section-labels mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_l">Label</p>
+  <input type="text" name="{{f{n}}}" id="{{f{n}}}" mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_p}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='text2' || f{n}_t=='text3' || f{n}_t=='textemail'">
+</div>
+<div class="col-md-4 form-group" mbr-class="{'col-md-6': f{n}_t=='text2' || f{n}_t=='textemail'}" mbr-if="fields >= {n} && f{n}_t=='text2' || fields >= {n} && f{n}_t=='text3' || fields >= {n} && f{n}_t=='textemail'">
+  <p class="mbr-section-labels mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_l">Label</p>
+  <input type="text"  name="{{f{n}_2}}" id="{{f{n}_2}}" mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_2_p}}" witsec-required="{{f{n}_2_r}}" mbr-if="f{n}_t=='text2' || f{n}_t=='text3'">
+  <input type="email" name="{{f{n}_2}}" id="{{f{n}_2}}" mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_2_p}}" witsec-required="{{f{n}_2_r}}" mbr-if="f{n}_t=='textemail'">
+</div>
+<div class="col-md-4 form-group" mbr-if="fields >= {n} && f{n}_t=='text3'">
+  <p class="mbr-section-labels mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_l">Label</p>
+  <input type="text" name="{{f{n}}}_3" id="{{f{n}}}_3" mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_3_p}}" witsec-required="{{f{n}_3_r}}" mbr-if="f{n}_t=='text3'">
+</div>
+
+<div class="col-md-3 form-group" mbr-class="{'col-md-6' : f{n}_w=='50', 'col-md-9' : f{n}_w=='75', 'col-md-12' : f{n}_w=='100'}" mbr-if="fields >= {n} && f{n}_t=='date' || fields >= {n} && f{n}_t=='datetime-local' || fields >= {n} && f{n}_t=='email' || fields >= {n} && f{n}_t=='file' || fields >= {n} && f{n}_t=='select' || fields >= {n} && f{n}_t=='text' || fields >= {n} && f{n}_t=='time'">
+  <p class="mbr-section-labels mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_l">Label</p>
+  <input type="{{f{n}_t}}" name="{{f{n}}}" id="{{f{n}}}"                                             mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_p}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='email' || f{n}_t=='file' || f{n}_t=='tel' || f{n}_t=='text'">
+  <input type="{{f{n}_t}}" name="{{f{n}}}" id="{{f{n}}}" min="{{f{n}_min_d}}"  max="{{f{n}_max_d}}"  mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_p}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='date'">
+  <input type="{{f{n}_t}}" name="{{f{n}}}" id="{{f{n}}}" min="{{f{n}_min_dt}}" max="{{f{n}_max_dt}}" mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_p}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='datetime-local'">
+  <input type="{{f{n}_t}}" name="{{f{n}}}" id="{{f{n}}}" min="{{f{n}_min_t}}"  max="{{f{n}_max_t}}"  mbr-theme-style="display-7" class="form-control" placeholder="{{f{n}_p}}" witsec-required="{{f{n}_r}}" mbr-if="f{n}_t=='time'">
+
+{select}
+</div>
+
+<div class="col-md-12 form-group" mbr-if="fields >= {n} && f{n}_t=='checkbox' || fields >= {n} && f{n}_t=='radio' || fields >= {n} && f{n}_t=='textarea'">
+  <p class="mbr-section-labels mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="f{n}_l">Label</p>
+  <textarea name="{{f{n}}}" id="{{f{n}}}" placeholder="{{f{n}_p}}" mbr-theme-style="display-7" class="form-control" mbr-if="f{n}_t=='textarea'" witsec-required="{{f{n}_r}}"></textarea>
+
+{checkboxes}
+{radios}
+</div>`;
+
+// Generate parameters and HTML for the "builder" block
+function generate() {
+    // Amount of fields and options
+    let fields = parseInt(document.getElementById("fields").value);
+    let options = parseInt(document.getElementById("options").value);
+
+    let p = ""; // parameters
+    let h = ""; // html
+    let ho = ""; // header options
+    let compact = document.getElementById("compact").checked;
+
+    for (n=1; n<fields+1; n++) {
+        let po = ""; // parameter options
+        let c = "";  // checkboxes
+        let r = "";  // radios
+        let so = ""; // select options
+        let s = "";  // select
+        let temp = "";
+
+        for (o=1; o<options+1; o++) {
+            po += paramOptions.replace(/{o}/g, o).replace(/{v}/g, (o<3 ? o : "")) + "\n";
+            c += htmlCheck.replace(/{o}/g, o) + htmlBRCheck.replace(/{o}/g, o) + "\n";
+            r += htmlRadio.replace(/{o}/g, o) + htmlBRRadio.replace(/{o}/g, o) + "\n";
+            so += htmlOptions.replace(/{o}/g, o) + (o != options ? "\n" : "");
+        }
+
+        ho += paramHeaderOptions.replace(/{n}/g, n);
+
+        s += htmlSelect.replace(/{options}/g, so).replace(/{o}/g, o);
+
+        temp = params.replace(/{paramOptions}/g, po).replace(/{n}/g, n) + "\n";
+        p += (compact ? temp.replace(/\n/g, "").replace(/ +/g, " ") + "\n" : temp);
+
+        temp = html.replace(/{checkboxes}/g, c).replace(/{radios}/g, r).replace(/{select}/g, s).replace(/{n}/g, n) + "\n\n";
+        h += (compact ? temp.replace(/\n/g, "").replace(/ +/g, " ") + "\n" : temp);
+    }
+
+    p = paramHeader.replace("{paramHeaderOptions}", ho) + "\n\n" + p;
+
+    document.getElementById("params").value = p;
+    document.getElementById("html").value = (compact ? h : h);
+}
+</script>
+
+</body>
+</html>
