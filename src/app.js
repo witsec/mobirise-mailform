@@ -731,7 +731,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									}
 
 									// Validate FROM email address
-									if (/^([^@]+?)@(([a-z0-9]-*)*[a-z0-9]+\.)+([a-z0-9]+)$/i.test($("#witsec-mailform-from").val()) == false) {
+									if (/^\s?[^\s,]+@[^\s,]+\.[^\s,]+$/i.test($("#witsec-mailform-from").val()) == false) {
 										mbrApp.alertDlg( TR("Please supply a valid email address for From Email.") );
 										return false;
 									}

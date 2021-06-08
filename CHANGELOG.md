@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v11.1 (2021-06-08)
+
+- Updated PHPMailer to 6.4.1
+- Fixed checks in 'From' email address where German characters weren't accepted
+
 ## v11 (2021-04-05)
 
 - Added SMTP support (site settings)
