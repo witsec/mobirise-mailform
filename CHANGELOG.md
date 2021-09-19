@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v12 (2021-09-xx)
+## v12 (2021-09-19)
 
 - Replaced jQuery with native JavaScript, because Mobirise won't be using that with Bootstrap 5 projects anymore
 - Updated PHPMailer to 6.5.1
