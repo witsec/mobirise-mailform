@@ -65,6 +65,10 @@
 								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="message"></p>
 								<textarea name="message" mbr-theme-style="display-7" class="form-control form-control-textarea" required="required"></textarea>
 							</div>
+							<div class="col-md-12 justify-content-center form-group" mbr-if="_params.showUpload">
+								<p class="mbr-section-labels mbr-fonts-style display-7" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-html="file"></p>
+								<input class="form-control" type="file" name="file">
+							</div>
 							<div class="col-md-12 justify-content-center form-group" mbr-if="_params.autorespond | eq 2">
 								<input type="checkbox" name="autorespond" value="1">
 								<p class="mbr-section-autorespond mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond" mbr-html="autorespond">

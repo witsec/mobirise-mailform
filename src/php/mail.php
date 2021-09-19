@@ -11,7 +11,7 @@ foreach (["PHPMailer.php", "Exception.php", "SMTP.php"] as $f) {
 		if (file_exists(strtolower($f)))
 			require strtolower($f);
 		else
-			json(false, "E1218", "Required file '" . $f . "' is missing");
+			json(false, "E1218", "Required file is missing", $f);
 	}
 }
 
@@ -39,13 +39,12 @@ $smtpPort = "{smtp-port}";											// SMTP Port
 $smtpSecure = "{smtp-secure}";										// SMTP Use SSL/TLS (empty, ssl or tls)
 $smtpUsername = "{smtp-username}";									// SMTP Username
 $smtpPassword = "{smtp-password}";									// SMTP Password
-$attachments = ("{attachments}" == "1" ? true : false);				// Process Attachments
 $attachmentsMimeTypes = explode(",", "{attachments-mimetypes}");	// Mime Types
 
 
 // Simple status page
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["status"])) {
-	echo "<!doctype html><head><title>Status</title></head><body>";
+	echo "<!doctype html><head><title>Status</title><meta charset='UTF-8'></head><body>";
 
 	// Check PHP version
 	echo (phpversion() >= 7.3 ? "✔️" : "❌") . " PHP Version<br>";
@@ -53,20 +52,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["status"])) {
 	// Check if OpenSSL is enabled
 	echo (extension_loaded("openssl") ? "✔️" : "❌") . " OpenSSL<br>";
 
-	// Check if function 'file_get_contents' exists
-	echo (function_exists("file_get_contents") ? "✔️" : "❌") . " Required functions<br>";
+	// Check if function 'file_get_contents' or 'curl_init' exists
+	echo (function_exists("file_get_contents") || function_exists("curl_init") ? "✔️" : "❌") . " Required functions<br>";
 
 	// Check if image functions for CAPTCHA exist
 	echo (function_exists("imagecreatetruecolor") && function_exists("imagecolorallocate") && function_exists("imagejpeg") ? "✔️" : "❌") . " Required functions for CAPTCHA<br>";
 
 	// Check if image functions for CAPTCHA exist
-	echo (function_exists("mime_content_type") ? "✔️" : "❌") . " Required functions for handling file attachments<br>";
+	echo (function_exists("mime_content_type") ? "✔️" : "❌") . " Required functions for checking file mime types " . (function_exists("mime_content_type") ? "" : "(maybe fileinfo extension is disabled, attachments will still work)") . "<br>";
 
 	// Check if Google can be contacted
-	if (extension_loaded("openssl") && function_exists("file_get_contents")) {
-		$res = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=12345&response=67890");
-		json_decode($res);
-		echo (json_last_error() == JSON_ERROR_NONE ? "✔️" : "❌") . " Connection to Google reCAPTCHA service<br>";
+	if (extension_loaded("openssl") && (function_exists("file_get_contents") || function_exists("curl_init"))) {
+		$s = SendReCaptcha("12345", "67890", true);
+		echo ($s ? "✔️" : "❌") . " Connection to Google reCAPTCHA service<br>";
 	} else
 		echo "❌ Connection to Google reCAPTCHA services (missing OpenSSL)<br>";
 
@@ -91,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 		// reCAPTCHA (only really does anything if reCAPTCHA is enabled)
 		if ($rcp && $rcpVersion != "captcha")
-			CheckReCAPTCHA();
+			CheckReCAPTCHA($rcpScore, $rcpSecret, $rcpVersion);
 
 		// Check captcha
 		if ($rcp && $rcpVersion == "captcha") {
@@ -100,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				// Captcha passed!
 			}
 			else
-				json(false, "E1200", "Request did not pass Captcha.");
+				json(false, "E1200", "Request did not pass Captcha");
 		}
 
 		// Determine the correct recipient
@@ -123,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$_POST = str_replace("\n", "<br>", $_POST);
 
 		// Send mail (to-address, Sender as From Email or predefined From Email, Sender as From Name or predefined From Name, subject, template)
-		SendPHPMail($to, ($fromThem ? $_POST["email"] : $from), ($fromThemReplyTo ? $_POST["email"] : null), SetFromName(), $subject, $template, $attachments, false);
+		SendPHPMail($to, ($fromThem ? $_POST["email"] : $from), ($fromThemReplyTo ? $_POST["email"] : null), SetFromName(), $subject, $template, false);
 
 		// Send autorespond
 		if ($autorespond) {
@@ -135,20 +133,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		json(true);
 	}
 	catch (Exception $e) {
-		json(false, "E1203", "An unknown error occured.");
+		json(false, "E1203", "An unknown error occured");
 	}
 }
 
 
 // Function to return JSON
-function json($success, $errorcode="", $msg="") {
+function json($success, $errorcode="", $msg="", $args="") {
 	$arr = array("success" => $success);
 
-	if ($errorcode)
-		$arr["errorcode"] = $errorcode;
-
-	if ($msg)
-		$arr["message"] = $msg;
+	if ($errorcode) $arr["errorcode"] = $errorcode;
+	if ($msg)       $arr["message"]   = $msg;
+	if ($args)      $arr["args"]      = $args;
 
 	// Send the JSON and stop the presses
 	header("Content-type: application/json");
@@ -158,43 +154,81 @@ function json($success, $errorcode="", $msg="") {
 
 
 // reCAPTCHA stuff
-function CheckReCAPTCHA() {
-	global $rcpScore, $rcpSecret, $rcpVersion;
-
+function CheckReCAPTCHA($rcpScore, $rcpSecret, $rcpVersion) {
 	// Check if reCAPTCHA response is present
 	if (!isset($_POST["g-recaptcha-response"]))
-		json(false, "E1204", "POST did not contain g-recaptcha-response.");
+		json(false, "E1204", "POST did not contain g-recaptcha-response");
 
 	// Check if function exists (we'll use this later on)
-	if (!function_exists("file_get_contents"))
-		json(false, "E1205", "Dependency for reCAPTCHA not available on server.");
+	if (!function_exists("file_get_contents") && !(function_exists("curl_init")))
+		json(false, "E1205", "Dependency for reCAPTCHA not available on server");
 
-	// Build POST request and execute it
-	$rcpUrl = 'https://www.google.com/recaptcha/api/siteverify';
+	// Get reCaptcha response from POST
 	$rcpResponse = $_POST["g-recaptcha-response"];
 	unset($_POST["g-recaptcha-response"]);	// Remove this, as we don't want this to end up in the template ;)
-	$rcpResponse = file_get_contents($rcpUrl . "?secret=" . $rcpSecret . "&response=" . $rcpResponse);
-	$rcpResponse = json_decode($rcpResponse, true);
 
-	// Check if the reponse was valid json
-	if (!is_array($rcpResponse))
-		json(false, "E1206", "Did not receive valid JSON from reCAPTCHA verification service or service not available.");
+	// Send reCaptcha
+	$rcpResponse = SendReCaptcha($rcpSecret, $rcpResponse);
 
 	// Success is handled differently in v2 and v3
 	if ($rcpVersion == "2") {
 		if (!$rcpResponse["success"]) {
-			json(false, "E1207", "Request did not pass reCAPTCHA: " . implode(", ", $rcpResponse["error-codes"]));
+			json(false, "E1207", "Request did not pass reCAPTCHA", implode(", ", $rcpResponse["error-codes"]));
 		}
 	} else {
 		// Check response ('success' just means it was a valid call with valid tokens)
 		if (!$rcpResponse["success"]) {
-			json(false, "E1208", "Invalid reCAPTCHA token: " . implode(", ", $rcpResponse["error-codes"]));
+			json(false, "E1208", "Invalid reCAPTCHA token", implode(", ", $rcpResponse["error-codes"]));
 		}
 
 		// Check score if we're using v3
 		if ($rcpVersion == "3" && $rcpResponse["score"] < floatval($rcpScore)) {
-			json(false, "E1209", "Request did not pass reCAPTCHA score.");
+			json(false, "E1209", "Request did not pass reCAPTCHA score", $rcpResponse["score"]);
 		}
+	}
+}
+
+
+// Build POST request and execute it
+function SendReCaptcha($rcpSecret, $rcpResponse, $statusCheck=false) {
+	$rcpUrl = "https://www.google.com/recaptcha/api/siteverify";
+
+	// Let's try with cURL
+	if (function_exists("curl_init")) {
+		$data = [
+			"secret" => $rcpSecret,
+			"response" => $rcpResponse
+		];
+
+		// Prepare cURL and go for it
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_URL, $rcpUrl);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+		$rcpResponse = curl_exec($curl);
+	}
+
+	// Or fallback to file_get_contents (deprecated)
+	else {
+		$rcpResponse = file_get_contents($rcpUrl . "?secret=" . $rcpSecret . "&response=" . $rcpResponse);
+	}
+
+	// Try to decode the response
+	$rcpResponse = json_decode($rcpResponse, true);
+
+	// Check if the reponse was valid json
+	if (is_array($rcpResponse)) {
+		if ($statusCheck)
+			return true;
+		else
+			return $rcpResponse;
+	} else {
+		if ($statusCheck)
+			return false;
+		else
+			json(false, "E1206", "Did not receive valid JSON from reCAPTCHA verification service or service not available");
 	}
 }
 
@@ -252,7 +286,7 @@ function RenderTemplate($template, $isAutorespond) {
 
 // Use PHPMailer to send the e-mail
 $debug = "";
-function SendPHPMail($to, $from, $replyTo, $fromName, $subject, $template, $attachments, $isAutorespond) {
+function SendPHPMail($to, $from, $replyTo, $fromName, $subject, $template, $isAutorespond) {
 	global $smtp, $smtpDebug, $smtpHost, $smtpPort, $smtpSecure, $smtpUsername, $smtpPassword, $attachmentsMimeTypes, $debug;
 
 	try {
@@ -299,49 +333,37 @@ function SendPHPMail($to, $from, $replyTo, $fromName, $subject, $template, $atta
 				$mail->SMTPSecure = $smtpSecure;
 		}
 
-		// Add attachments, if enabled and if there are any, loop through them and attach 'em all
-		if ($attachments && isset($_FILES) && count($_FILES) > 0) {
-			// Check if required function is available (not always the case on Windows servers)
-			if (!function_exists("mime_content_type"))
-				json(false, "E1202", "Dependency for file attachments not available on server.");
-	
-			foreach ($_FILES as $f) {
-				// Let's do some error handling
-				switch($f["error"]) {
-					case 0:		// 0 = No errors with upload
-						// Check if the file was uploaded via HTTP POST
-						if (!is_uploaded_file($f["tmp_name"]))
-							json(false, "E1210", "Error uploading file '" . $f["name"] . "'");
+		// Add attachments, if enabled and if there are any
+		if (isset($_FILES) && count($_FILES) > 0) {
+			// Loop through all files
+			foreach ($_FILES as $file) {
 
-						$fmime = strtolower(mime_content_type($f["tmp_name"]));
+				// If multiple files are uploaded at the same time (using "multiple" attribute on file input), let's rearrange that array a bit
+				if (is_array($file["name"]))
+					$files = rearrangeFiles($file);
+				else
+					$files[] = $file;
 
-						// Let's check if the mime type is part of the allowed mime types array
-						$found = false;
-						if (!in_array($fmime, $attachmentsMimeTypes)) {
-							// Apparently not, so let's go through all wildcards
-							foreach($attachmentsMimeTypes as $amt) {
-								if (substr($amt, -1) == "*") {
-									$amt = substr($amt, 0, -1);
-						
-									if (stripos($fmime, $amt) !== false) {
-										$found = true;
-										break;
-									}
-								}
-							}
+				// Loop through files
+				foreach ($files as $f) {
+					// Let's do some error handling
+					switch($f["error"]) {
+						case 0:		// 0 = No errors with upload
+							// Check if the file was uploaded via HTTP POST
+							if (!is_uploaded_file($f["tmp_name"]))
+								json(false, "E1210", "Error uploading file", $f["name"]);
 
-							// If no match has been found, the mime type is not allowed
-							if (!$found)
-								json(false, "E1211", "Error uploading file '" . $f["name"] . "' (mime type '" . $fmime . "' is not allowed)");
-						}
+							// Check mime type
+							CheckMimeType($f);
 
-						// All is well, add it to the e-mail
-						$mail->AddAttachment($f["tmp_name"], $f["name"]);
-						break;
-					case 4:		// 4 = No file was uploaded, just continue
-						break;
-					default:	// Any other error
-						json(false, "E1212", "Error uploading file '" . $f["name"] . "' (" . $f["error"] . ")");
+							// All is well, add it to the e-mail
+							$mail->AddAttachment($f["tmp_name"], $f["name"]);
+							break;
+						case 4:		// 4 = No file was uploaded, just continue
+							break;
+						default:	// Any other error
+							json(false, "E1212", "Error uploading file", $f["name"] . " (" . $f["error"] . ")");
+					}
 				}
 			}
 		}
@@ -398,7 +420,7 @@ function SanitizeUserInput() {
 
 	// Check if a valid e-mail address is provided
 	if ( !filter_var($_POST["email"], FILTER_VALIDATE_EMAIL) )
-		json(false, "E1217", "Invalid email address.");
+		json(false, "E1217", "Invalid email address");
 }
 
 
@@ -438,5 +460,53 @@ function GetClientIP() {
 	
 	// You shouldn't get here, but OK
 	return "127.0.0.1";
+}
+
+
+// Check mime type of a file (if the function is available)
+function CheckMimeType($f) {
+	global $attachmentsMimeTypes;
+
+	// If function is not available, skip the checks
+	if (!function_exists("mime_content_type"))
+		return;
+
+	$fmime = strtolower(mime_content_type($f["tmp_name"]));
+
+	// Let's check if the mime type is part of the allowed mime types array
+	$found = false;
+	if (!in_array($fmime, $attachmentsMimeTypes)) {
+		// Apparently not, so let's go through all wildcards
+		foreach($attachmentsMimeTypes as $amt) {
+			if (substr($amt, -1) == "*") {
+				$amt = substr($amt, 0, -1);
+	
+				if (stripos($fmime, $amt) !== false) {
+					$found = true;
+					break;
+				}
+			}
+		}
+
+		// If no match has been found, the mime type is not allowed
+		if (!$found)
+			json(false, "E1211", "Error uploading file (mime type is not allowed)", $f["name"] . " (" . $fmime . ")");
+	}
+}
+
+
+// Function to rearrange files when multiple files are uploaded at once
+function rearrangeFiles($file) {
+	$file_ary = array();
+	$file_count = count($file["name"]);
+	$file_keys = array_keys($file);
+
+	for ($i=0; $i<$file_count; $i++) {
+		foreach ($file_keys as $key) {
+			$file_ary[$i][$key] = $file[$key][$i];
+		}
+	}
+
+	return $file_ary;
 }
 ?>

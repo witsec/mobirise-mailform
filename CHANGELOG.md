@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v12 (2021-09-xx)
+
+- Replaced jQuery with native JavaScript, because Mobirise won't be using that with Bootstrap 5 projects anymore
+- Updated PHPMailer to 6.5.1
+- Added callback functionality to `witsecSendMail` function, so a developer can decide what to do with a response and handle everything from there. Simply call `witsecSendMail(form object, callback function)`
+- Added `curl` and made that the preferred method of calling the reCAPTCHA service (`file_get_contents` will likely be removed in a future version)
+- Added UTF-8 header to status page
+- If the `mime_content_type` function isn't present, it will now skip mime type checks and proceed handling file attachments
+- Added (customizable) file upload button to contact form blocks
+- Added code to allow multiple files at once (when a file input uses the `multiple` attribute)
+- Removed the need to enable file attachments
+
 ## v11.1 (2021-06-08)
 
 - Updated PHPMailer to 6.4.1

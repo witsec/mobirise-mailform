@@ -141,16 +141,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						$(".witsec-mailform-smtp-div").hide();
 				});
 
-				// Respond to enabling/disabling "Use Attachments"
-				mbrApp.$body.on("change", "#witsec-mailform-attachments", function () {
-					if ($("#witsec-mailform-attachments").prop("checked"))
-						$(".witsec-mailform-attachments-div").show();
-					else
-						$(".witsec-mailform-attachments-div").hide();
-				});
-
 				// Respond to clicking the 'default' button for mime types
-				var defaultMimeTypes = "application/gzip\napplication/java-archive\napplication/javascript\napplication/json\napplication/ld+json\napplication/msword\napplication/ogg\napplication/pdf\napplication/rtf\napplication/vnd.amazon.ebook\napplication/vnd.api+json\napplication/vnd.apple.installer+xml\napplication/vnd.mozilla.xul+xml\napplication/vnd.ms-excel\napplication/vnd.ms-fontobject\napplication/vnd.ms-powerpoint\napplication/vnd.oasis.opendocument.presentation\napplication/vnd.oasis.opendocument.spreadsheet\napplication/vnd.oasis.opendocument.text\napplication/vnd.openxmlformats-officedocument.presentationml.presentation\napplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet\napplication/vnd.openxmlformats-officedocument.wordprocessingml.document\napplication/vnd.rar\napplication/vnd.visio\napplication/x-7z-compressed\napplication/x-abiword\napplication/x-bzip\napplication/x-bzip2\napplication/x-freearc\napplication/x-httpd-php\napplication/x-tar\napplication/x-www-form-urlencoded\napplication/xhtml+xml\napplication/xml\napplication/zip\napplication/zstd\naudio/*\nfont/*\nimage/*\nmultipart/form-data\ntext/*\nvideo/*";
+				var defaultMimeTypes = "application/gzip\napplication/java-archive\napplication/json\napplication/ld+json\napplication/msword\napplication/ogg\napplication/pdf\napplication/rtf\napplication/vnd.amazon.ebook\napplication/vnd.api+json\napplication/vnd.apple.installer+xml\napplication/vnd.mozilla.xul+xml\napplication/vnd.ms-excel\napplication/vnd.ms-fontobject\napplication/vnd.ms-powerpoint\napplication/vnd.oasis.opendocument.presentation\napplication/vnd.oasis.opendocument.spreadsheet\napplication/vnd.oasis.opendocument.text\napplication/vnd.openxmlformats-officedocument.presentationml.presentation\napplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet\napplication/vnd.openxmlformats-officedocument.wordprocessingml.document\napplication/vnd.rar\napplication/vnd.visio\napplication/x-7z-compressed\napplication/x-abiword\napplication/x-bzip\napplication/x-bzip2\napplication/x-freearc\napplication/x-httpd-php\napplication/x-tar\napplication/x-www-form-urlencoded\napplication/xhtml+xml\napplication/xml\napplication/zip\napplication/zstd\naudio/*\nfont/*\nimage/*\nmultipart/form-data\ntext/plain\ntext/calendar\ntext/css\ntext/csv\ntext/rtf\nvideo/*";
 				mbrApp.$body.on("click", "#witsec-mailform-attachments-mimetypes-default", function () {
 					$("#witsec-mailform-attachments-mimetypes").val(defaultMimeTypes);
 				});
@@ -207,9 +199,6 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 
 					// Show or hide SMTP fields
 					var hideSMTP = (a.projectSettings["witsec-mailform-smtp"] ? "" : "style='display:none'");
-
-					// Show or hide SMTP fields
-					var hideAttachments = (a.projectSettings["witsec-mailform-attachments"] ? "" : "style='display:none'");
 
 					// Display modal window with settings
 					mbrApp.showDialog({
@@ -512,23 +501,13 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'  <!-- TAB ATTACHMENTS -->',
 							'  <div class="tab-pane fade" id="ws-mf-tab-attachments">',
 							'    <div class="form-group row">',
-							'      <label for="witsec-mailform-attachments" class="col-sm-5 col-form-label">' + TR("Allow Attachments") + '</label>',
-							'      <div class="col-sm-7">',
-							'        <div class="togglebutton">',
-							'          <label style="width: 100%">',
-							'            <input type="checkbox" id="witsec-mailform-attachments" name="witsec-mailform-attachments" ' + (a.projectSettings["witsec-mailform-attachments"] ? "checked" : "") + ">",
-							'            <span class="toggle" style="margin-top: -6px;"></span>',
-							'          </label>',
-							'        </div>',
-							'      </div>',
-							'    </div>',
-							'    <div class="form-group row witsec-mailform-attachments-div" ' + hideAttachments + '>',
 							'      <label for="witsec-mailform-attachments-mimetypes" class="col-sm-5 col-form-label">' + TR("Allowed Mime Types") + ' <a href="#" id="witsec-mailform-attachments-mimetypes-help">(?)</a></label>',
 							'      <div class="col-sm-7">',
 							'        <textarea class="form-control" style="height:188px; white-space:nowrap; text-transform:lowercase;" id="witsec-mailform-attachments-mimetypes">' + a.projectSettings["witsec-mailform-attachments-mimetypes"] + '</textarea>',
 							'        <small id="witsec-mailform-attachments-mimetypes-default"><a href="#">' + TR("back to default") + '</a></small>',
 							'      </div>',
 							'    </div>',
+							'  </div>',
 
 							'</div>',
 							'</form>'
@@ -685,11 +664,6 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 										help = `
 										<h4>Help - File Attachments</h4>
 
-										<i>Enable Attachments</i><br>
-										Switch to allow/disallow file attachments. When this option is enabled and a form has one or more file inputs, these files will be processed and validated when the form is
-										submitted. If a file matches any of the allowed Mime Types, it will be added as attachment to the email that's sent to the recipient(s). When this option is switched off,
-										any file inputs a form may have will be ignored.<br><br>
-
 										<i>Allowed Mime Types</i><br>
 										Mime Types are labels used to identify types of data. For security reasons, you decide what types of files someone can send from your forms. Mime types are much more reliable
 										than file extensions.<br>
@@ -767,7 +741,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									}
 
 									// Check if Mime Types only allowed characters
-									if ($("#witsec-mailform-attachments").prop("checked") && /^[\na-z0-9\+\*\-\.\/]*$/.test($("#witsec-mailform-attachments-mimetypes").val()) == false) {
+									if (/^[\na-z0-9\+\*\-\.\/]*$/.test($("#witsec-mailform-attachments-mimetypes").val()) == false) {
 										mbrApp.alertDlg( TR("Mime Types contain one or more invalid characters.") );
 										return false;
 									}
@@ -799,7 +773,6 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									a.projectSettings["witsec-mailform-smtp-secure"]               = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-secure option:selected").val() : "");
 									a.projectSettings["witsec-mailform-smtp-username"]             = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-username").val() : "");
 									a.projectSettings["witsec-mailform-smtp-password"]             = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-password").val() : "");
-									a.projectSettings["witsec-mailform-attachments"]               =  $("#witsec-mailform-attachments").prop("checked");
 									a.projectSettings["witsec-mailform-attachments-mimetypes"]     =  $("#witsec-mailform-attachments-mimetypes").val().replace(/(\n){2,}/g, "$1").trim();
 									mbrApp.runSaveProject();
 								}
@@ -820,7 +793,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							CheckForPlugin(block);
 
 						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
-						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/scripts/mail.php', function (data) {
+						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function (data) {
 							// Replace the variables with the correct values
 							php = data;
 							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
@@ -891,15 +864,10 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 								var pattern = /(<\s*div[^>]*class=['"][^>]*g-recaptcha)()([^>]*['"][^>]*>)([\w\W]*?)(<\/div>)/mi;
 								var captcha = `
 									<div class="input-group-prepend">
-										<div class="input-group-text captcha" style="background: url(assets/witsec-mailform/captcha.php) repeat-y left center; background-repeat: no-repeat; background-color: #cccccc; width: 72px; flex:none;"></div>
+										<div class="input-group-text captcha" style="background: url(assets/witsec-mailform/captcha.php) repeat-y left center; background-repeat:no-repeat; background-color:#cccccc; width:72px; height:100%; flex:none;"></div>
 									</div>
 									<input type="text" class="form-control" name="captcha" required maxlength="6" placeholder="Captcha" style="flex:none; width:120px; font-family:monospace; font-size:12pt">
-									<div class="captchaReload" style="display: flex; align-items: center; border: none; background-color: inherit; padding-left: 5px; cursor: pointer">
-										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-											<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"></path>
-											<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"></path>
-										</svg>
-									</div>`;
+									<div class="captchaReload" style="display:flex; align-items:center; border:none; background-color:inherit; padding-left:5px; cursor:pointer; width:25px; background:url(assets/witsec-mailform/captcha-reload.svg) no-repeat center"></div>`;
 
 								if (pattern.test(html))
 									html = html.replace(pattern, "$1 input-group$3" + captcha + "$4$5");

@@ -38,6 +38,7 @@ textarea.form-control {
 
 LABEL {
   color: #232323;
+  display: initial;
 }
 
 .mbr-section-terms {
@@ -93,4 +94,36 @@ LABEL {
 .mbr-alert-danger {
   text-align: left;
   color: #ffffff;
+}
+
+.uploadBtn {
+  padding-top: unit(@uploadBtnPaddingY, px) !important;
+  padding-left: unit(@uploadBtnPaddingX, px) !important;
+}
+
+input[type=file]::file-selector-button {
+  border: (@uploadBtnBdrWidth * 1px) solid @uploadBtnBdrColor !important;
+  padding: .2em .4em;
+  border-radius: .2em;
+  background-color: @uploadBtnBgColor !important;
+  color: @uploadBtnTxtColor !important;
+  transition: 0.3s;
+}
+
+input[type=file]::-webkit-file-upload-button {
+  border: (@uploadBtnBdrWidth * 1px) solid @uploadBtnBdrColor !important;
+  padding: .2em .4em;
+  border-radius: .2em;
+  background-color: @uploadBtnBgColor !important;
+  color: @uploadBtnTxtColor !important;
+  transition: 0.3s;
+}
+
+input[type=file]::-ms-browse {
+  border: (@uploadBtnBdrWidth * 1px) solid @uploadBtnBdrColor !important;
+  padding: .2em .4em;
+  border-radius: .2em;
+  background-color: @uploadBtnBgColor !important;
+  color: @uploadBtnTxtColor !important;
+  transition: 0.3s;
 }

@@ -1,42 +1,53 @@
-<section class="witsec-mailform mbr-section" plugins="witsec-mailform" data-bg-video="{{bg.type == 'video' && bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
+<section class="witsec-mailform mbr-section" plugins="witsec-mailform" data-bg-video="{{bg.type == 'video' &amp;&amp; bg.value.url}}" mbr-class="{'mbr-parallax-background': bg.parallax}">
 
   <mbr-parameters>
   <!-- Block parameters controls (Blue "Gear" panel) -->
     <header>Global settings can be changed in the <a href="#" onclick="$('.projects-show').click()">Site Settings</a> of your website</header>
 
     <header>Size</header>
-    <input type="range" inline title="Top" name="paddingTop" min="0" max="8" value="6">
-    <input type="range" inline title="Bottom" name="paddingBottom" min="0" max="8" value="6">
+    <input type="range" inline="" title="Top" name="paddingTop" min="0" max="8" value="6">
+    <input type="range" inline="" title="Bottom" name="paddingBottom" min="0" max="8" value="6">
     <select title="Align Submit" name="alignSubmit">
-      <option value>Left</option>
-      <option value="align-center" selected>Center</option>
+      <option value="">Left</option>
+      <option value="align-center" selected="">Center</option>
       <option value="align-right">Right</option>
     </select>
 
     <header>Show/Hide</header>
-    <input type="checkbox" title="Show Title" name="showTitle" checked>
-    <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked>
-    <input type="checkbox" title="Show Phone" name="showPhone" checked>
+    <input type="checkbox" title="Show Title" name="showTitle" checked="">
+    <input type="checkbox" title="Show Subtitle" name="showSubtitle" checked="">
+    <input type="checkbox" title="Show Phone" name="showPhone" checked="">
     <input type="checkbox" title="Show GDPR" name="showGDPR">
     <input type="checkbox" title="Show reCAPTCHA Terms" name="showTerms">
-    <input type="checkbox" title="Show Labels" name="showLabels" checked>
+    <input type="checkbox" title="Show Labels" name="showLabels" checked="">
+    <input type="checkbox" title="Show Upload" name="showUpload">
 
     <header>Placeholders</header>
-    <input type="text" title="Name" name="phName" value>
-    <input type="text" title="Email" name="phEmail" value>
-    <input type="text" title="Phone" name="phPhone" value condition="showPhone">
-    <input type="text" title="Message" name="phMessage" value>
+    <input type="text" title="Name" name="phName" value="">
+    <input type="text" title="Email" name="phEmail" value="">
+    <input type="text" title="Phone" name="phPhone" value="" condition="showPhone">
+    <input type="text" title="Message" name="phMessage" value="">
+
+    <header condition="showUpload">Upload Options</header>
+    <input type="text" title="File Extension Filter" name="acceptedFileTypes" value=".gif, .jpg, .jpeg, .png, .pdf" condition="showUpload">
+    <input type="checkbox" title="Multiple Files" name="uploadMultiple" condition="showUpload">
+    <input type="range" inline="" title="Padding Top" name="uploadBtnPaddingY" min="0" max="50" step="0.5" value="13" condition="showUpload">
+    <input type="range" inline="" title="Padding Left" name="uploadBtnPaddingX" min="0" max="50" step="0.5" value="12.5" condition="showUpload">
+    <input type="color" title="Background Color" name="uploadBtnBgColor" value="#cccccc" condition="showUpload">
+    <input type="color" title="Text Color" name="uploadBtnTxtColor" value="#232323" condition="showUpload">
+    <input type="color" title="Border Color" name="uploadBtnBdrColor" value="#232323" condition="showUpload">
+    <input type="range" inline="" title="Border Width" name="uploadBtnBdrWidth" min="0" max="3" step="0.25" value="1" condition="showUpload">
 
     <header>Form Options</header>
-    <input type="text" title="Alternative Recipient (use Address Book ID as defined in Site Settings)" name="recipientID" value>
+    <input type="text" title="Alternative Recipient (use Address Book ID as defined in Site Settings)" name="recipientID" value="">
     <input type="text" title="Subject" name="txtSubject" value="A message from your website.">
     <select title="Autorespond" name="autorespond">
-      <option value="0" selected>Off</option>
+      <option value="0" selected="">Off</option>
       <option value="1">On</option>
       <option value="2">User Decision</option>
     </select>
     <select title="On Success" name="onsuccess">
-      <option value="0" selected>Stay</option>
+      <option value="0" selected="">Stay</option>
       <option value="1">Redirect</option>
     </select>
     <input type="checkbox" title="Confirmation Below Form" name="confirmationBelow">
@@ -49,23 +60,23 @@
     <textarea name="rtxt" title="Response Mail" condition="autorespond > 0"></textarea>
 
     <header>Alerts</header>
-    <input type="checkbox" title="Show Alerts in Mobirise" name="showAlerts" checked>
+    <input type="checkbox" title="Show Alerts in Mobirise" name="showAlerts" checked="">
     <input type="color" title="Success BG Color" name="bgColorSuccess" value="#70c770" condition="onsuccess == 0">
     <input type="color" title="Error BG Color" name="bgColorError" value="#ff4a52">
 
     <header>Background</header>
-    <fieldset type="background" name="bg" parallax>
-        <input type="image" title="Background Image" value="../_images/background.jpg" parallax>
-        <input type="color" title="Background Color" value="#ffffff" selected>
+    <fieldset type="background" name="bg" parallax="">
+        <input type="image" title="Background Image" value="file:///C:/Users/Mark/AppData/Local/Mobirise.com/Mobirise/projects/project-2021-07-23_230250/assets/images/background-1.jpg" parallax="">
+        <input type="color" title="Background Color" value="#ffffff" selected="">
         <input type="video" title="Background Video" value="http://www.youtube.com/watch?v=uNCr7NdOJgw">
     </fieldset>
-    <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked>
-    <input type="color" title="Overlay Color" name="overlayColor" value="#c1c1c1" condition="overlay && bg.type !== 'color'">
-    <input type="range" inline title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.3" condition="overlay && bg.type !== 'color'">
+    <input type="checkbox" title="Overlay" name="overlay" condition="bg.type !== 'color'" checked="">
+    <input type="color" title="Overlay Color" name="overlayColor" value="#c1c1c1" condition="overlay &amp;&amp; bg.type !== 'color'">
+    <input type="range" inline="" title="Opacity" name="overlayOpacity" min="0" max="1" step="0.1" value="0.3" condition="overlay &amp;&amp; bg.type !== 'color'">
   <!-- End block parameters -->
   </mbr-parameters>
 
-  <div class="mbr-overlay" mbr-if="overlay && bg.type!== 'color'" mbr-style="{'opacity': overlayOpacity, 'background-color': overlayColor}">
+  <div class="mbr-overlay" mbr-if="overlay &amp;&amp; bg.type!== 'color'" mbr-style="{'opacity': overlayOpacity, 'background-color': overlayColor}">
   </div>
   <div class="container">
     <div class="row justify-content-center">
@@ -93,27 +104,32 @@
             <div class="rowflexrev" mbr-class="{ 'flex-column': !confirmationBelow, 'flex-column-reverse': confirmationBelow }">
               <div class="row">
                 <div class="col-md-12 form-group ws-form-alerts">
-                  <div hidden="hidden" mbr-text class="alert alert-success col-12 mbr-alert-success mbr-fonts-style" mbr-class="{showAlerts: !isPublish && showAlerts}" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-alert-success" mbr-if="onsuccess=='0'">Thanks for filling out the form!</div>
-                  <div hidden="hidden" mbr-text class="alert alert-danger col-12 mbr-alert-danger mbr-fonts-style" mbr-class="{showAlerts: !isPublish && showAlerts}" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-alert-danger">An error occured. Please try again.</div>
+                  <div hidden="hidden" mbr-text="" class="alert alert-success col-12 mbr-alert-success mbr-fonts-style" mbr-class="{showAlerts: !isPublish &amp;&amp; showAlerts}" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-alert-success" mbr-if="onsuccess=='0'">Thanks for filling out the form!</div>
+                  <div hidden="hidden" mbr-text="" class="alert alert-danger col-12 mbr-alert-danger mbr-fonts-style" mbr-class="{showAlerts: !isPublish &amp;&amp; showAlerts}" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-alert-danger">An error occured. Please try again.</div>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-4 form-group" mbr-class="{'col-md-6': !showPhone}">
-                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Name</p>
+                  <p mbr-text="" mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Name</p>
                   <input type="text" name="name" placeholder="{{phName}}" mbr-theme-style="display-7" required="required" class="form-control">
                 </div>
                 <div class="col-md-4 form-group" mbr-class="{'col-md-6': !showPhone}">
-                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Email</p>
+                  <p mbr-text="" mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Email</p>
                   <input type="email" name="email" placeholder="{{phEmail}}" mbr-theme-style="display-7" required="required" class="form-control">
                 </div>
                 <div mbr-if="showPhone" class="col-md-4 form-group">
-                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Phone</p>
+                  <p mbr-text="" mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Phone</p>
                   <input type="tel" name="phone" placeholder="{{phPhone}}" mbr-theme-style="display-7" class="form-control">
                 </div>
                 <div class="col-md-12 form-group">
-                  <p mbr-text mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Message</p>
+                  <p mbr-text="" mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">Message</p>
                   <textarea name="message" placeholder="{{phMessage}}" mbr-theme-style="display-7" required="required" class="form-control"></textarea>
+                </div>
+                <div class="col-md-12 form-group mb-3" mbr-if="showUpload">
+                  <p mbr-text="" mbr-theme-style="display-7" class="mbr-section-labels mbr-fonts-style" data-app-edit="content" data-app-selector=".mbr-section-labels" mbr-if="showLabels">File</p>
+                  <input class="form-control uploadBtn" type="file" name="file" accept="{{acceptedFileTypes}}" mbr-if="!uploadMultiple">
+                  <input class="form-control uploadBtn" type="file" name="file[]" accept="{{acceptedFileTypes}}" mbr-if="uploadMultiple" multiple="">
                 </div>
                 <div mbr-if="autorespond=='2' || showGDPR" class="col-md-12 justify-content-center form-group">
                   <p class="mbr-section-autorespond mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-autorespond" mbr-if="autorespond=='2'">
@@ -121,7 +137,7 @@
                     <label class="mbr-section-autorespond mbr-fonts-style">Send me a copy</label>
                   </p>
                   <p class="mbr-section-gdpr mbr-text mbr-fonts-style" mbr-theme-style="display-7" data-app-edit="content" data-app-selector=".mbr-section-gdpr" mbr-if="showGDPR">
-                    <input type="checkbox" name="GDPR" value="1" required>
+                    <input type="checkbox" name="GDPR" value="1" required="">
                     <label class="mbr-section-gdpr mbr-fonts-style">By continuing you agree to our <a href="terms.html">Terms of Service</a> and <a href="policy.html">Privacy Policy</a>.</label></p>
                 </div>
                 <div mbr-if="showTerms" class="col-md-12 justify-content-center form-group">
