@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		// Send autorespond
 		if ($autorespond) {
 			$arSubject = $autorespondSubject ?: trim($autorespondSubjectPrefix . " " . $subject);
-			SendPHPMail($_POST["email"], $from, null, $fromName, $arSubject, $autorespondTemplate, false, true);
+			SendPHPMail($_POST["email"], $from, null, $fromName, $arSubject, $autorespondTemplate, true);
 		}
 
 		// If we ended up here, it's all good
