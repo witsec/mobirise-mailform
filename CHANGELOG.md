@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v12.2 (2022-xx-xx)
+## v12.2 (2022-02-04)
 
 - Fixed issue with form (sometimes) disappearing when 'Animate on Scroll' was enabled
 - Removed "25" as placeholder for the SMTP port field, as it confused people and is used for unencrypted connections anyway
