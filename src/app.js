@@ -153,7 +153,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 				});
 
 				// Show settings window
-				a.$body.on("click", "#witsec-mailform-editbtn", function () {
+				mbrApp.$body.on("click", "#witsec-mailform-editbtn", function () {
 					// Do a check if mailform values have been set, otherwise set it to something default
 					a.projectSettings["witsec-mailform-to"]                        = a.projectSettings["witsec-mailform-to"] || mbrApp.getUserInfo()["email"];
 					a.projectSettings["witsec-mailform-to-alt"]                    = a.projectSettings["witsec-mailform-to-alt"] || "";
@@ -450,7 +450,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'    <div class="form-group row witsec-mailform-smtp-div" ' + hideSMTP + '>',
 							'      <label for="witsec-mailform-smtp-port" class="col-sm-5 col-form-label">' + TR("Port") + '</label>',
 							'      <div class="col-sm-7">',
-							'        <input type="number" class="form-control" id="witsec-mailform-smtp-port" min="0" max="65535" step="1" placeholder="25" value="' + a.projectSettings["witsec-mailform-smtp-port"] + '">',
+							'        <input type="number" class="form-control" id="witsec-mailform-smtp-port" min="0" max="65535" step="1" value="' + a.projectSettings["witsec-mailform-smtp-port"] + '">',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-smtp-div" ' + hideSMTP + '>',

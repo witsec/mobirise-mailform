@@ -1,7 +1,7 @@
 {
-    "name": "Mailform v12.1",
+    "name": "Mailform v12.2",
     "alias": "witsec-mailform",
-    "version": 12.1,
+    "version": 12.2,
     "minAppVersion": "4.10.17",
     "components" : [
 		{
@@ -30,5 +30,6 @@
     "ampCompatible": false,
 	"appScript": true,
 	"description":"Easily add independent contact forms to your website. <a href='https://witsec.nl'>Learn more...</a>",
-	"logo":"thumbnail.svg"
+    "largeCover": "cover.jpg",
+	"logo":"thumbnail.jpg"
 }

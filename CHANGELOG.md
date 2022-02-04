@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v12.2 (2022-xx-xx)
+
+- Fixed issue with form (sometimes) disappearing when 'Animate on Scroll' was enabled
+- Removed "25" as placeholder for the SMTP port field, as it confused people and is used for unencrypted connections anyway
+- Updated thumbnail so it shows up properly when Dark Mode is enabled
+
 ## v12.1 (2021-10-14)
 
 - Fixed bug where mini response template didn't end up in the response email
