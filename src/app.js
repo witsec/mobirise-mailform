@@ -833,9 +833,26 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "2" || a.projectSettings["witsec-mailform-recaptcha-version"] == "3") {
 								// Add reCAPTCHA Javascript and sitekey to the page
 								var scripts = "";
+								var scriptsAfter = "";
 								if (a.projectSettings["witsec-mailform-recaptcha-version"] == "3") {
 									scripts = "\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>";
-									scripts += "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";
+									
+									scriptsAfter += '<script>' + "\n";
+									scriptsAfter += '    // Lazy-Load recaptcha only on form input focus' + "\n";
+									scriptsAfter += '    function reCaptchaOnFocus() {' + "\n";
+									scriptsAfter += '      var head = document.getElementsByTagName("head")[0];' + "\n";
+									scriptsAfter += '      var script = document.createElement("script");' + "\n";
+									scriptsAfter += '      script.type = "text/javascript";' + "\n";
+									scriptsAfter += '      script.src = "https://www.google.com/recaptcha/api.js?render=" + witsecRcpSitekey;' + "\n";
+									scriptsAfter += '      head.appendChild(script);' + "\n\n";
+
+									scriptsAfter += '      // Remove call of reCaptchaOnFocus after first call' + "\n";
+									scriptsAfter += '      for (let myElement of document.getElementsByClassName("form-control")) { myElement.removeEventListener("focus", reCaptchaOnFocus); }' + "\n";
+									scriptsAfter += '    };' + "\n\n";
+									
+									scriptsAfter += '    // Add initial Event-Listener to call Loading of reCaptchaOnFocus on form input' + "\n";
+									scriptsAfter += '    for (let myElement of document.getElementsByClassName("form-control")) { myElement.addEventListener("focus", reCaptchaOnFocus, false); }' + "\n";
+									scriptsAfter += '  </script>' + "\n\n";								
 
 									// If the user chose to hide the badge
 									if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
@@ -846,6 +863,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 
 								// Replace the section tag with 'itself' and add the scripts
 								html = html.replace(/(<\s*section[^>]*>)/gmi, "$1\n" + scripts);
+								html = html.replace(/(<\s*\/section[^>]*>)/gmi, scriptsAfter + "$1\n");
 							}
 
 							// If we're using reCAPTCHA v2, check if the "g-recaptcha" <div> exists. If it doesn't, add it
