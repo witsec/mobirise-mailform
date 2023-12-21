@@ -11,6 +11,34 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 				if (mbrApp.isAMP())
 					return;
 
+				// If the Mobirise cookie alert is set, add some script to load our stuff anyway, so we can at least throw an error
+				a.addFilter("publishHTML", function(b) {
+					if (a.projectSettings["witsec-mailform"] && a.projectSettings["cookiesAlertType"]) {
+						let s = `
+							<script>
+							document.addEventListener("DOMContentLoaded", function() {
+								try {
+									let mfAllScripts = document.getElementsByTagName("script");
+									mfAllScripts = Array.prototype.slice.call(mfAllScripts);
+									mfAllScripts.forEach(function(v) {
+										if (v.dataset.src && v.dataset.src.endsWith("witsec-mailform/mailform.js")) {
+											v.type = "text/javascript";
+											v.src = v.dataset.src;
+											v.removeAttribute("data-src");
+										}
+									});
+								}
+								catch (e) {
+								}
+							});
+							</script>
+						`;
+						b = b.replace(/<\/body>/ig, s + "</body>");
+					}
+
+					return b;
+				});
+
 				// Add site settings
 				a.addFilter("sidebarProjectSettings", function (b) {
 					var wm = a.projectSettings["witsec-mailform"] || false;
@@ -141,10 +169,22 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						$(".witsec-mailform-smtp-div").hide();
 				});
 
+				// Respond to clicking the 'default' button for file extensions
+				var defaultExtensions = "avi\nbmp\ncer\ncfg\ncss\ncsv\ncur\ndoc\ndocx\neml\nemlx\nfnt\nfon\ngif\nh264\nico\nini\njpeg\njpg\nkey\nlog\nmid\nmkv\nmov\nmp3\nmp4\nmpa\nmpeg\nmpg\nmsg\nodp\nods\nodt\nogg\notf\npdf\npng\npps\nppt\npptx\nps\npsd\nrss\nrtf\nsvg\ntif\ntiff\nttf\ntxt\nvcf\nwav\nwebm\nwebp\nwma\nwmv\nwpd\nxls\nxlsx";
+				mbrApp.$body.on("click", "#witsec-mailform-attachments-extensions-default", function () {
+					$("#witsec-mailform-attachments-extensions").val(defaultExtensions);
+				});
+
 				// Respond to clicking the 'default' button for mime types
 				var defaultMimeTypes = "application/gzip\napplication/java-archive\napplication/json\napplication/ld+json\napplication/msword\napplication/ogg\napplication/pdf\napplication/rtf\napplication/vnd.amazon.ebook\napplication/vnd.api+json\napplication/vnd.apple.installer+xml\napplication/vnd.mozilla.xul+xml\napplication/vnd.ms-excel\napplication/vnd.ms-fontobject\napplication/vnd.ms-powerpoint\napplication/vnd.oasis.opendocument.presentation\napplication/vnd.oasis.opendocument.spreadsheet\napplication/vnd.oasis.opendocument.text\napplication/vnd.openxmlformats-officedocument.presentationml.presentation\napplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet\napplication/vnd.openxmlformats-officedocument.wordprocessingml.document\napplication/vnd.rar\napplication/vnd.visio\napplication/x-7z-compressed\napplication/x-abiword\napplication/x-bzip\napplication/x-bzip2\napplication/x-freearc\napplication/x-httpd-php\napplication/x-tar\napplication/x-www-form-urlencoded\napplication/xhtml+xml\napplication/xml\napplication/zip\napplication/zstd\naudio/*\nfont/*\nimage/*\nmultipart/form-data\ntext/plain\ntext/calendar\ntext/css\ntext/csv\ntext/rtf\nvideo/*";
 				mbrApp.$body.on("click", "#witsec-mailform-attachments-mimetypes-default", function () {
 					$("#witsec-mailform-attachments-mimetypes").val(defaultMimeTypes);
+				});
+
+				// Default Allowed HTML tags
+				var defaultAllowedHTML = "b,br,i,p,u";
+				mbrApp.$body.on("click", "#witsec-mailform-allowedhtml-default", function () {
+					$("#witsec-mailform-allowedhtml").val(defaultAllowedHTML);
 				});
 
 				// Respond to clicking the 'question mark' for allowed Mime Types
@@ -164,6 +204,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					a.projectSettings["witsec-mailform-from-name-them"]            = a.projectSettings["witsec-mailform-from-name-them"] || false;
 					a.projectSettings["witsec-mailform-from-name-them-field"]      = a.projectSettings["witsec-mailform-from-name-them-field"] || "{name}";
 					a.projectSettings["witsec-mailform-template"]                  = a.projectSettings["witsec-mailform-template"] || "Hi,\n\nYou have received a new message from your website.\n\n{formdata}\n\nDate: {date}\nRemote IP: {ip}\n\n---\nHave a nice day.";
+					a.projectSettings["witsec-mailform-dateformat"]                = a.projectSettings["witsec-mailform-dateformat"] || "F j, Y";
+					a.projectSettings["witsec-mailform-timeformat"]                = a.projectSettings["witsec-mailform-timeformat"] || "g:i a";
 					a.projectSettings["witsec-mailform-autorespond-subjectprefix"] = a.projectSettings["witsec-mailform-autorespond-subjectprefix"] || "Re:";
 					a.projectSettings["witsec-mailform-autorespond-subject"]       = a.projectSettings["witsec-mailform-autorespond-subject"] || "";
 					a.projectSettings["witsec-mailform-autorespond-template"]      = a.projectSettings["witsec-mailform-autorespond-template"] || "Hi {name},\n\nThank you for your message. We'll get back to you as soon as we can.\nHere's the information you sent us:\n\n{formdata}\n\n---\nHave a nice day.";
@@ -180,8 +222,9 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					a.projectSettings["witsec-mailform-smtp-secure"]               = a.projectSettings["witsec-mailform-smtp-secure"] || "";
 					a.projectSettings["witsec-mailform-smtp-username"]             = a.projectSettings["witsec-mailform-smtp-username"] || "";
 					a.projectSettings["witsec-mailform-smtp-password"]             = a.projectSettings["witsec-mailform-smtp-password"] || "";
-					a.projectSettings["witsec-mailform-attachments"]               = a.projectSettings["witsec-mailform-attachments"] || false;
 					a.projectSettings["witsec-mailform-attachments-mimetypes"]     = a.projectSettings["witsec-mailform-attachments-mimetypes"] || defaultMimeTypes;
+					a.projectSettings["witsec-mailform-attachments-extensions"]    = a.projectSettings["witsec-mailform-attachments-extensions"] || defaultExtensions;
+					a.projectSettings["witsec-mailform-allowedhtml"]               = (a.projectSettings["witsec-mailform-allowedhtml"] ? a.projectSettings["witsec-mailform-allowedhtml"] : defaultAllowedHTML);
 
 					// Show or hide the "Sender Form Name Field" field, based on whether "Sender as From Name" is checked
 					var hideFromNameThemField = (a.projectSettings["witsec-mailform-from-name-them"] == false ? "style='display:none'" : "");
@@ -236,7 +279,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'    <div class="form-group row">',
 							'      <label for="witsec-mailform-to-alt" class="col-sm-5 col-form-label">' + TR("Address Book") + '</label>',
 							'      <div class="col-sm-7">',
-							'        <textarea class="form-control" style="height:188px; white-space:nowrap" id="witsec-mailform-to-alt" placeholder="john:j.doe@domain.com">' + a.projectSettings["witsec-mailform-to-alt"] + '</textarea>',
+							'        <textarea class="form-control" style="height:100px; white-space:nowrap" id="witsec-mailform-to-alt" placeholder="john:j.doe@domain.com">' + a.projectSettings["witsec-mailform-to-alt"] + '</textarea>',
 							'      </div>',
 							'    </div>',
 							'    <div class="form-group row witsec-mailform-from-div">',
@@ -266,6 +309,44 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'            <span class="toggle" style="margin-top: -6px;"></span>',
 							'          </label>',
 							'        </div>',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row">',
+							'      <label class="col-sm-5 col-form-label">' + TR("Date Format") + '</label>',
+							'      <div class="col-sm-5">',
+							'        <select id="witsec-mailform-dateformat" class="form-control" style="color:#fff">',
+							'          <option value="F j, Y">February 14, 2021</option>',
+							'          <option value="M j, Y">Feb 14, 2021</option>',
+							'          <option value="j F, Y">14 February, 2021</option>',
+							'          <option value="j M, Y">14 Feb, 2021</option>',
+							'          <option value="Y-m-d">2021-02-14</option>',
+							'          <option value="m/d/Y">02/14/2021</option>',
+							'          <option value="d/m/Y">14/02/2021</option>',
+							'          <option value="d-m-Y">14-02-2021</option>',
+							'        </select>',
+							'        <script>',
+							'        $("#witsec-mailform-dateformat").val("' + a.projectSettings["witsec-mailform-dateformat"] + '");',
+							'        </script>',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row">',
+							'      <label class="col-sm-5 col-form-label">' + TR("Time Format") + '</label>',
+							'      <div class="col-sm-5">',
+							'        <select id="witsec-mailform-timeformat" class="form-control" style="color:#fff">',
+							'          <option value="g:i a">9:18 pm</option>',
+							'          <option value="g:i A">9:18 PM</option>',
+							'          <option value="H:i">21:18</option>',
+							'        </select>',
+							'        <script>',
+							'        $("#witsec-mailform-timeformat").val("' + a.projectSettings["witsec-mailform-timeformat"] + '");',
+							'        </script>',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row">',
+							'      <label for="witsec-mailform-allowedhtml" class="col-sm-5 col-form-label">' + TR("Allowed HTML Tags (BBCode)") + '</label>',
+							'      <div class="col-sm-7">',
+							'        <input type="text" class="form-control" id="witsec-mailform-allowedhtml" value="' + a.projectSettings["witsec-mailform-allowedhtml"] + '">',
+							'        <small id="witsec-mailform-allowedhtml-default"><a href="#">' + TR("back to default") + '</a></small>',
 							'      </div>',
 							'    </div>',
 							'  </div>',
@@ -501,6 +582,13 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							'  <!-- TAB ATTACHMENTS -->',
 							'  <div class="tab-pane fade" id="ws-mf-tab-attachments">',
 							'    <div class="form-group row">',
+							'      <label for="witsec-mailform-attachments-extensions" class="col-sm-5 col-form-label">' + TR("Allowed File Extensions") + '</label>',
+							'      <div class="col-sm-7">',
+							'        <textarea class="form-control" style="height:188px; white-space:nowrap; text-transform:lowercase;" id="witsec-mailform-attachments-extensions">' + a.projectSettings["witsec-mailform-attachments-extensions"] + '</textarea>',
+							'        <small id="witsec-mailform-attachments-extensions-default"><a href="#">' + TR("back to default") + '</a></small>',
+							'      </div>',
+							'    </div>',
+							'    <div class="form-group row">',
 							'      <label for="witsec-mailform-attachments-mimetypes" class="col-sm-5 col-form-label">' + TR("Allowed Mime Types") + ' <a href="#" id="witsec-mailform-attachments-mimetypes-help">(?)</a></label>',
 							'      <div class="col-sm-7">',
 							'        <textarea class="form-control" style="height:188px; white-space:nowrap; text-transform:lowercase;" id="witsec-mailform-attachments-mimetypes">' + a.projectSettings["witsec-mailform-attachments-mimetypes"] + '</textarea>',
@@ -551,7 +639,16 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 
 										<i>Disable Button after Submit</i><br>
 										To prevent a form from being submited twice, you can disable the submit button after it's clicked. When the submit action is finished, the button will be enabled again. This also
-										allows you to style the disabled state of the button using a Code Editor.
+										allows you to style the disabled state of the button using a Code Editor.<br><br>
+
+										<i>Date and Time formats</i><br>
+										If you're using date and/or time fields in your forms, you can choose what format you want to use for those. For datetime fields, the same formats will be used, but the fields
+										will be separated with a single space.<br><br>
+
+										<i>Allowed HTML Tags (BBCode)</i><br>
+										You can allow people (or yourself, in mini templates) to use some HTML in form fields for additional styling. This is a really simple and limited implementation of 
+										<a href='javascript:mbrApp.openUrl("https://en.wikipedia.org/wiki/BBCode")'>BBCode</a>, where <code>[b]bold[/b]</code> will result in bold text, <code>[u]underlined[/u]</code> in underlined
+										text - and so on. Separate tags with a comma. Leave empty to not allow any HTML/BBCode.
 										`;
 									}
 									
@@ -655,8 +752,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 										When you run into issues using SMTP, consider enabling debug to try to help solve them. Only have this enabled when testing, turn this setting OFF when running in production.<br><br>
 
 										<b>Important</b><br>
-										SMTP may not work due to (firewall) settings on the web server. Be sure to check the status page: <code>assets/witsec-mailform/mail.php?status</code>.<br>
-										SMTP details will be removed from a published project.mobirise file and are ONLY stored inside the "mail.php" file, located in assets/witsec-mailform/.
+										SMTP may not work due to (firewall) settings on the web server. Be sure to check the status page: <code>assets/witsec-mailform/status.php</code>.<br>
+										SMTP details will be removed from a published project.mobirise file and are ONLY stored inside the "settings.php" file, located in assets/witsec-mailform/.
 										`;
 									}
 
@@ -664,10 +761,14 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 										help = `
 										<h4>Help - File Attachments</h4>
 
+										<i>Allowed File Extensions</i><br>
+										This is a list of allowed file extensions. A default set of commonly used file extensions is provided. From a security perspective, no file extension is ever safe, so make sure
+										endpoint protection is in place (like anti-virus and anti-malware software).<br><br>
+
 										<i>Allowed Mime Types</i><br>
-										Mime Types are labels used to identify types of data. For security reasons, you decide what types of files someone can send from your forms. Mime types are much more reliable
-										than file extensions.<br>
-										A default set of commonly used (and safe) mime types is provided. It's possible to use wildcards (*), but only at the end. For example <code>image/*</code>.
+										Mime Types are labels used to identify types of data. Files that are uploaded through your forms are checked on allowed mime types. For security reasons, you decide what types
+										of files someone can send from your forms.<br>
+										A default set of commonly used mime types is provided. It's possible to use wildcards (*), but only at the end. For example <code>image/*</code>.
 										`;
 									}
 
@@ -698,7 +799,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 
 										for (let i=0; i<mt.length; i++) {
 											if ( !/^[0-9a-zA-Z]+:(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/.test(mt[i]) ) {
-												mbrApp.alertDlg( TR("Additional Recipient '%recipient%' contains one or more invalid characters.").replace(/%(.+)%/, mt[i]) );
+												mbrApp.alertDlg( TR("Additional Recipient '%recipient%' contains one or more invalid characters.<br><br>First set an 'identifier' (ID), consisting of letters and/or numbers. The identifier is followed by a colon. After that, you can add one or more email addresses. Use commas to separate addresses.").replace(/%(.+)%/, mt[i]) );
 												return false;
 											}
 										}
@@ -740,9 +841,21 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 										return false;
 									}
 
-									// Check if Mime Types only allowed characters
+									// Check if File Extensions only contain allowed characters
+									if (/^[\na-z0-9\+\-]*$/.test($("#witsec-mailform-attachments-extensions").val()) == false) {
+										mbrApp.alertDlg( TR("File Extensions contain one or more invalid characters.") );
+										return false;
+									}
+
+									// Check if Mime Types only contain allowed characters
 									if (/^[\na-z0-9\+\*\-\.\/]*$/.test($("#witsec-mailform-attachments-mimetypes").val()) == false) {
 										mbrApp.alertDlg( TR("Mime Types contain one or more invalid characters.") );
+										return false;
+									}
+
+									// Check if Allowed HTML only contain allowed characters
+									if (/^[a-z, ]*$/.test($("#witsec-mailform-allowedhtml").val()) == false) {
+										mbrApp.alertDlg( TR("Allowed HTML Tags contain one or more invalid characters. Only use letters and (single) commas.") );
 										return false;
 									}
 
@@ -756,13 +869,15 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									a.projectSettings["witsec-mailform-from-name-them"]            =  $("#witsec-mailform-from-name-them").prop("checked");
 									a.projectSettings["witsec-mailform-from-name-them-field"]      =  $("#witsec-mailform-from-name-them-field").val();
 									a.projectSettings["witsec-mailform-template"]                  =  $("#witsec-mailform-template").val();
+									a.projectSettings["witsec-mailform-dateformat"]                =  $("#witsec-mailform-dateformat option:selected").val();
+									a.projectSettings["witsec-mailform-timeformat"]                =  $("#witsec-mailform-timeformat option:selected").val();
 									a.projectSettings["witsec-mailform-autorespond-subjectprefix"] =  $("#witsec-mailform-autorespond-subjectprefix").val();
 									a.projectSettings["witsec-mailform-autorespond-subject"]       = ($("#witsec-mailform-autorespond-subjecttype").val() == "0" ? "" : $("#witsec-mailform-autorespond-subject").val().trim());
 									a.projectSettings["witsec-mailform-autorespond-template"]      =  $("#witsec-mailform-autorespond-template").val();
 									a.projectSettings["witsec-mailform-recaptcha"]                 =  $("#witsec-mailform-recaptcha").prop("checked");
 									a.projectSettings["witsec-mailform-recaptcha-version"]         =  $("#witsec-mailform-recaptcha-version option:selected").val();
-									a.projectSettings["witsec-mailform-recaptcha-sitekey"]         =  $("#witsec-mailform-recaptcha-sitekey").val();
-									a.projectSettings["witsec-mailform-recaptcha-secretkey"]       =  $("#witsec-mailform-recaptcha-secretkey").val();
+									a.projectSettings["witsec-mailform-recaptcha-sitekey"]         = ($("#witsec-mailform-recaptcha").prop("checked") ? $("#witsec-mailform-recaptcha-sitekey").val() : "");
+									a.projectSettings["witsec-mailform-recaptcha-secretkey"]       = ($("#witsec-mailform-recaptcha").prop("checked") ? $("#witsec-mailform-recaptcha-secretkey").val() : "");
 									a.projectSettings["witsec-mailform-recaptcha-score"]           =  $("#witsec-mailform-recaptcha-score option:selected").val();
 									a.projectSettings["witsec-mailform-recaptcha-hidebadge"]       =  $("#witsec-mailform-recaptcha-hidebadge").prop("checked");
 									a.projectSettings["witsec-mailform-disable-button"]            =  $("#witsec-mailform-disable-button").prop("checked");
@@ -773,7 +888,9 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 									a.projectSettings["witsec-mailform-smtp-secure"]               = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-secure option:selected").val() : "");
 									a.projectSettings["witsec-mailform-smtp-username"]             = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-username").val() : "");
 									a.projectSettings["witsec-mailform-smtp-password"]             = ($("#witsec-mailform-smtp").prop("checked") ? $("#witsec-mailform-smtp-password").val() : "");
+									a.projectSettings["witsec-mailform-attachments-extensions"]    =  $("#witsec-mailform-attachments-extensions").val().replace(/(\n){2,}/g, "$1").trim();
 									a.projectSettings["witsec-mailform-attachments-mimetypes"]     =  $("#witsec-mailform-attachments-mimetypes").val().replace(/(\n){2,}/g, "$1").trim();
+									a.projectSettings["witsec-mailform-allowedhtml"]               =  $("#witsec-mailform-allowedhtml").val().replace(/ /g, "").replace(/,+/g, ",").trim();
 									mbrApp.runSaveProject();
 								}
 							}
@@ -793,7 +910,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							CheckForPlugin(block);
 
 						// Read the php file from this addon's directory, we'll write the contents later (in publishTemplating)
-						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/mail.php', function (data) {
+						$.get(mbrApp.getAddonsDir() + '/witsec-mailform/php/settings.php', function (data) {
 							// Replace the variables with the correct values
 							php = data;
 							php = php.replace(/{to}/g, a.projectSettings["witsec-mailform-to"]);
@@ -808,6 +925,8 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							php = php.replace(/{autorespond-subject}/g, a.projectSettings["witsec-mailform-autorespond-subject"]);
 							php = php.replace(/{autorespond-template}/g, a.projectSettings["witsec-mailform-autorespond-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
 							php = php.replace(/{template}/g, a.projectSettings["witsec-mailform-template"].replace(/\n/g, "<br>").replace(/"/g, "\\\""));
+							php = php.replace(/{dateformat}/g, a.projectSettings["witsec-mailform-dateformat"] || "");
+							php = php.replace(/{timeformat}/g, a.projectSettings["witsec-mailform-timeformat"] || "");
 							php = php.replace(/{recaptcha}/g, (a.projectSettings["witsec-mailform-recaptcha"] ? "1" : "0"));
 							php = php.replace(/{recaptcha-version}/g, (a.projectSettings["witsec-mailform-recaptcha-version"] || "3") );
 							php = php.replace(/{recaptcha-secretkey}/g, a.projectSettings["witsec-mailform-recaptcha-secretkey"]);
@@ -819,37 +938,41 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							php = php.replace(/{smtp-secure}/g, a.projectSettings["witsec-mailform-smtp-secure"]);
 							php = php.replace(/{smtp-username}/g, a.projectSettings["witsec-mailform-smtp-username"]);
 							php = php.replace(/{smtp-password}/g, a.projectSettings["witsec-mailform-smtp-password"]);
-							php = php.replace(/{attachments}/g, (a.projectSettings["witsec-mailform-attachments"] ? "1" : "0"));
-							php = php.replace(/{attachments-mimetypes}/g, a.projectSettings["witsec-mailform-attachments-mimetypes"].replace(/\n/g, ",").trim());
+							php = php.replace(/{attachments-extensions}/g, (a.projectSettings["witsec-mailform-attachments-extensions"] ? a.projectSettings["witsec-mailform-attachments-extensions"].replace(/\n/g, ",").trim() : defaultExtensions.replace(/\n/g, ",").trim()));
+							php = php.replace(/{attachments-mimetypes}/g, (a.projectSettings["witsec-mailform-attachments-mimetypes"] ? a.projectSettings["witsec-mailform-attachments-mimetypes"].replace(/\n/g, ",").trim() : defaultMimeTypes.replace(/\n/g, ",").trim()));
+							php = php.replace(/{allowedhtml}/g, (a.projectSettings["witsec-mailform-allowedhtml"] ? a.projectSettings["witsec-mailform-allowedhtml"].trim() : defaultAllowedHTML.trim()));
 						});
 
 						// If simple CAPTCHA or reCAPTCHA v2 is used, but the "g-recaptcha" <div> isn't present, we can add it. This is the var we use for that
-						var rcpCaptchaDiv = "";
+						let rcpCaptchaDiv = "";
+
+						let rcpVersion = a.projectSettings["witsec-mailform-recaptcha-version"];
 
 						// If CAPTCHA is enabled...
 						if (a.projectSettings["witsec-mailform-recaptcha"]) {
 
 							// If we're dealing with reCAPTCHA v2 or v3
-							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "2" || a.projectSettings["witsec-mailform-recaptcha-version"] == "3") {
+							if (rcpVersion == "2" || rcpVersion == "3") {
 								// Add reCAPTCHA Javascript and sitekey to the page
-								var scripts = "";
-								if (a.projectSettings["witsec-mailform-recaptcha-version"] == "3") {
-									scripts = "\n<script>var witsecRcpSitekey = \"" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\";</script>";
+								var scripts = `<script>var witsecRcp = "` + rcpVersion + `";</script>`;
+								if (rcpVersion == "3") {
+									scripts += `\n<script>var witsecRcpSitekey = "` + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + `";</script>`;
 									scripts += "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";
 
 									// If the user chose to hide the badge
 									if (a.projectSettings["witsec-mailform-recaptcha-hidebadge"]) {
-										scripts += "\n<style>.grecaptcha-badge { display: none !important;}</style>";
+										scripts += "\n<style>.grecaptcha-badge { visibility:hidden; opacity:0; }</style>";
 									}
-								} else
+								} else {
 									scripts = "\n<script src=\"https://www.google.com/recaptcha/api.js\" async defer></script>";
+								}
 
 								// Replace the section tag with 'itself' and add the scripts
-								html = html.replace(/(<\s*section[^>]*>)/gmi, "$1\n" + scripts);
+								html = html.replace(/(<\/section>)/gmi, scripts + "$1");
 							}
 
 							// If we're using reCAPTCHA v2, check if the "g-recaptcha" <div> exists. If it doesn't, add it
-							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "2") {
+							if (rcpVersion == "2") {
 								var patternAll = /<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*>[\w\W]*?<\/div>/mi;	// Grab entire element
 								var patternBegin = /(<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*)>/mi;				// Grab begin tag only
 	
@@ -860,7 +983,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							}
 
 							// If we're using simple CAPTCHA, check if the "g-recaptcha" <div> exists. If it doesn't, add it
-							if (a.projectSettings["witsec-mailform-recaptcha-version"] == "captcha") {
+							if (rcpVersion == "captcha") {
 								var pattern = /(<\s*div[^>]*class=['"][^>]*g-recaptcha)()([^>]*['"][^>]*>)([\w\W]*?)(<\/div>)/mi;
 								var captcha = `
 									<div class="input-group-prepend">
@@ -877,7 +1000,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						}
 						
 						// If reCAPTCHA is disabled or if it's enabled AND we're using v3, remove the "g-recaptcha" <div>
-						if ( !a.projectSettings["witsec-mailform-recaptcha"] || (a.projectSettings["witsec-mailform-recaptcha"] && a.projectSettings["witsec-mailform-recaptcha-version"] == "3") )
+						if ( !a.projectSettings["witsec-mailform-recaptcha"] || (a.projectSettings["witsec-mailform-recaptcha"] && rcpVersion == "3") )
 							html = html.replace(/<\s*div[^>]*class=['"][^>]*g-recaptcha[^>]*['"][^>]*>[\w\W]*?<\/div>/mi, "");
 						
 						// If the submit button needs to be disabled when the form is sent
@@ -891,7 +1014,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						// Put the values of the witsec-html attribute inside the tag that has it
 						html = html.replace(/(<\s*(\w+)[^<]*?)\s+witsec-html=['"]([^"']*)['"]([^>]*?)\s*>[\w\W]*?(<\/\2>)/gm, "$1$4>$3$5");
 
-						// Replace mbr-required with "required" or ""
+						// Replace witsec-required with "required" or ""
 						html = html.replace(/(<\s*[^>]*)(witsec-required=['"](true|false)['"])/gmi, function(match, $1, $2, $3) {
 							return $1 + ($3 == "true" ? "required": "");
 						});
@@ -905,7 +1028,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 					// Only add this file to the export list if the mailform is enabled
 					if (a.projectSettings["witsec-mailform"]) {
 						b.push(
-							{ srcList: [{ src: "mail.php", filter: "template" }], dest: "assets/witsec-mailform/mail.php" }
+							{ srcList: [{ src: "settings.php", filter: "template" }], dest: "assets/witsec-mailform/settings.php" }
 						);
 					}
 
@@ -916,19 +1039,21 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 				a.addFilter("publishTemplating", function (b, filename) {
 					if (a.projectSettings["witsec-mailform"]) {
 						// Return the 'parsed' PHP
-						if (filename == "mail.php") {
+						if (filename == "settings.php") {
 							return php;
 						}
 
 						// Empty sensitive variables from the (exported) project.mobirise file
-						if (filename == "project.mobirise")
+						if (filename == "project.mobirise") {
 							b = b.replace(/("witsec-mailform-recaptcha-secretkey": ")(.+)(",)/g, "$1$3");
 							b = b.replace(/("witsec-mailform-smtp-host": ")(.+)(",)/g, "$1$3");
 							b = b.replace(/("witsec-mailform-smtp-port": ")(.+)(",)/g, "$1$3");
 							b = b.replace(/("witsec-mailform-smtp-secure": ")(.+)(",)/g, "$1$3");
 							b = b.replace(/("witsec-mailform-smtp-username": ")(.+)(",)/g, "$1$3");
 							b = b.replace(/("witsec-mailform-smtp-password": ")(.+)(",)/g, "$1$3");
-							return b;
+						}
+
+						return b;
 					}
 
 					// Return the default
@@ -945,7 +1070,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 						// Plugin not present, we're dealing with an older form
 						mbrApp.showDialog({
 							title: "Change required to witsec Mail Form section",
-							className: "",
+							className: "witsec-mailform-modal",
 							body: [
 								"From v11 of the witsec Mailform extension, all required Javascript and PHP files are automatically loaded. This requires the 'witsec-mailform' plugin to be loaded. You can add this yourself using a Code Editor:<br><br>",
 								"",

@@ -3,12 +3,42 @@
         "name": "witsec-mailform",
         "priority": 3000,
         "files": [
-            "witsec-mailform/mailform.js",
-            "witsec-mailform/PHPMailer.php",
-            "witsec-mailform/Exception.php",
-            "witsec-mailform/SMTP.php",
-            "witsec-mailform/captcha.php",
-            "witsec-mailform/captcha-reload.svg"
+            {
+                "src" : "witsec-mailform/mailform.js",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/PHPMailer.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/Exception.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/SMTP.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/captcha.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/captcha-reload.svg",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/mailform.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/functions.php",
+                "publishOnly" : true
+            },
+            {
+                "src" : "witsec-mailform/status.php",
+                "publishOnly" : true
+            }
         ]
     }
 ]

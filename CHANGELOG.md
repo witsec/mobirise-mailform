@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## v13 (2023-12-21)
+
+- Renamed "mail.php" to `mailform.php` file, as it freaked out ModSecurity on some servers
+- Moved all settings to `settings.php` file
+- Moved status page code to `status.php` file
+- Changed reCAPTCHA badge CSS from `display:none` to `visibility:none; opacity:0`, if one chooses to hide it
+- Updated PHPMailer to v6.8.1
+- Fixed a bug where, if no additional recipients were set, PHP would throw an error
+- Fixed a bug where if multiple checkboxes were checked, the values would end up as 'array' in the email. This only occured on PHP 8
+- Added list of File Extensions to 'File Attachments' tab, so one can choose to only accept files that match specific extensions
+- Added feature to format dates and times. When a field ends with `-date`, `-time` or `-datetime`, the formats as chosen in the settings window will be used. The names of said fields will be stripped off the suffix
+- Added feature to allow specific HTML tags (using simplified BBCode format) in form fields (or mini templates) for additional styling
+- Made it so the `mailform.js` file is loaded if Mobirise's Cookie Alert is used, so at least the form can throw a warning rather than not doing anything at all, in case a visitor hasn't given consent
+- Gave text input fields a black text color by default, in some themes it was white, making input unreadable. The color can be changed in the block parameters
+
 ## v12.2 (2022-02-04)
 
 - Fixed issue with form (sometimes) disappearing when 'Animate on Scroll' was enabled
