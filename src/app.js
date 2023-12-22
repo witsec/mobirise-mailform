@@ -954,7 +954,7 @@ defineM("witsec-mailform", function (g, mbrApp, TR) {
 							// If we're dealing with reCAPTCHA v2 or v3
 							if (rcpVersion == "2" || rcpVersion == "3") {
 								// Add reCAPTCHA Javascript and sitekey to the page
-								var scripts = `<script>var witsecRcp = "` + rcpVersion + `";</script>`;
+								let scripts = "";
 								if (rcpVersion == "3") {
 									scripts += `\n<script>var witsecRcpSitekey = "` + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + `";</script>`;
 									scripts += "\n<script src=\"https://www.google.com/recaptcha/api.js?render=" + a.projectSettings["witsec-mailform-recaptcha-sitekey"] + "\"></script>";

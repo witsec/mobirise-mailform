@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v13.1 (2023-12-22)
+
+- Fixed bug where form didn't send when captcha was disabled
+- Removed some unnecessary code
+
 ## v13 (2023-12-21)
 
 - Renamed "mail.php" to `mailform.php` file, as it freaked out ModSecurity on some servers

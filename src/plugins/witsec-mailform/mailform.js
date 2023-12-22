@@ -8,13 +8,6 @@ function witsecSendMail(frm, callback) {
 		return false;
 	}
 
-	// If 'witsecRcp' doesn't exist, it hasn't been loaded, meaning it's been blocked by something
-	if (typeof witsecRcp === 'undefined') {
-		witsecMfSetErrors(frm.querySelector("div.alert-danger"), { "errorcode": "E1220", "message": "Form not ready" });
-		frm.querySelector("div.alert-danger").hidden = false;
-		return false;
-	}
-
 	// Check if a reCAPTCHA site key is defined (v3)
 	if (typeof witsecRcpSitekey !== 'undefined') {
 		if (typeof grecaptcha !== 'undefined') {
@@ -202,45 +195,6 @@ mfListen("section.witsec-mailform form", "submit", function(event) {
 });
 
 
-// Load captcha scripts when user changes the form (more GDPR compliant)
-// document.addEventListener("DOMContentLoaded", function(event) {
-// 	wsLoadScripts();
-// });
-
-// let mfReady = false;
-// function wsLoadScripts() {
-// 	if (document.readyState === "loading")
-// 		return false;
-
-// 	if (typeof witsecRcp !== 'undefined') {
-// 		mfListen("section.witsec-mailform input, section.witsec-mailform textarea, section.witsec-mailform select", "change", function() {
-// 			// Prepare script element
-// 			let s = document.createElement("script");
-
-// 			// Set captcha source script (if witsecRcpSitekey exists, we're dealing with v3)
-// 			if (witsecRcp === "3" && typeof witsecRcpSitekey !== 'undefined')
-// 				s.src = "https://www.google.com/recaptcha/api.js?onload=mfCallback&render=" + witsecRcpSitekey;
-// 			else {
-// 				s.src = "https://www.google.com/recaptcha/api.js?onload=mfCallback";
-// 				s.async = true;
-// 				s.defer = true;
-// 			}
-	
-// 			// Inject script
-// 			document.body.appendChild(s);
-// 		});
-// 	} else {
-// 		mfCallback();
-// 	}
-// }
-
-
-// Callback function when captcha is loaded
-// function mfCallback() {
-// 	mfReady = true;
-// }
-
-
 /* Some IE 11 compatibility (perhaps even lower, but that's just gross...) */
 
 // Check if we're dealing with IE
@@ -295,5 +249,4 @@ function mfListen(selector, event, func) {
 
 
 // Trigger specific functions in case this script file is injected -after- the DOMContentLoaded event
-//wsLoadScripts();
 wsRegisterClosest();
